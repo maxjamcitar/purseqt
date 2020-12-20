@@ -98,17 +98,16 @@ void Manager::readFile(QString fileName){
             stream >> classType;
             if (classType == QString("Income"))
             {
-                qDebug() << "im about to head out";
                 QSharedPointer<Income> incPtr = QSharedPointer<Income>(new Income);
                 incPtr->fromStreamRaw(stream);
-                QSharedPointer<Transaction> transInst = incPtr.dynamicCast<Transaction>();
+                QSharedPointer<Transaction> transInst = qSharedPointerDynamicCast<Transaction>(incPtr);
                 addEnd(transInst);
             }
             else if (classType == QString("Expense"))
             {
                 QSharedPointer<Expense> expPtr = QSharedPointer<Expense>(new Expense);
                 expPtr->fromStreamRaw(stream);
-                QSharedPointer<Transaction> transInst = expPtr.dynamicCast<Transaction>();
+                QSharedPointer<Transaction> transInst = qSharedPointerDynamicCast<Transaction>(expPtr);
                 addEnd(transInst);
             }
             else
@@ -152,38 +151,42 @@ QString Manager::show() const
     return result;
 }
 
-bool Manager::compareTwo(const Transaction& left, const Transaction& right, ParameterType field) const
+bool Manager::compareTwo(const QSharedPointer<Transaction> left, const QSharedPointer<Transaction> right, ParameterType field) const
 {
     bool result;
     QString leftCateg, rightCateg;
     switch (field)
     {
+    case ParameterType::DATE:
+        result = (left->getDate() > right->getDate()) ? true : false;
+        break;
+
     case ParameterType::PRICE:
-        result = (left.getPrice() > right.getPrice()) ? true : false;
+        result = (left->getPrice() > right->getPrice()) ? true : false;
         break;
 
     case ParameterType::CATEGORY:
-        if (left.getClassType() == QString("Income"))
+        if (left->getClassType() == QString("Income"))
         {
-            QSharedPointer<Income> leftInc = QSharedPointer<Income>(new Income, &left);
+            QSharedPointer<Income> leftInc = qSharedPointerDynamicCast<Income>(left);
             leftCateg = leftInc->getSource();
         }
-        else if (left.getClassType() == QString("Expense"))
+        else if (left->getClassType() == QString("Expense"))
         {
-            QSharedPointer<Expense> leftExp = QSharedPointer<Expense>(new Expense, &left);
+            QSharedPointer<Expense> leftExp = qSharedPointerDynamicCast<Expense>(left);
             leftCateg = leftExp->getGoods();
         }
         else
             leftCateg = QString("NaN");
 
-        if (right.getClassType() == QString("Income"))
+        if (right->getClassType() == QString("Income"))
         {
-            QSharedPointer<Income> rightInc = QSharedPointer<Income>(new Income, &right);
+            QSharedPointer<Income> rightInc = qSharedPointerDynamicCast<Income>(right);
             rightCateg = rightInc->getSource();
         }
-        else if (right.getClassType() == QString("Expense"))
+        else if (right->getClassType() == QString("Expense"))
         {
-            QSharedPointer<Expense> rightExp = QSharedPointer<Expense>(new Expense, &right);
+            QSharedPointer<Expense> rightExp = qSharedPointerDynamicCast<Expense>(right);
             rightCateg = rightExp->getGoods();
         }
         else
@@ -193,11 +196,7 @@ bool Manager::compareTwo(const Transaction& left, const Transaction& right, Para
         break;
 
     default:
-        qDebug() << QString("Unknown parameter. Sorting by date");
-
-    case ParameterType::DATE:
-        result = (left.getDate() > right.getDate()) ? true : false;
-        break;
+        qDebug() << QString("Unknown parameter. Sorting cancelled");
     }
     return result;
 }
@@ -217,13 +216,13 @@ void Manager::sort(ParameterType field, bool isAscending)
         {
             if (isAscending)
             {
-                if (compareTwo(*(*mainItemIter), *(*mainItemIter), field))
+                if (compareTwo(*mainItemIter, *nextItemIter, field))
                 {
                     std::swap(mainItemIter, nextItemIter);
                 }
             }
             else
-                if (!compareTwo(*(*mainItemIter), *(*mainItemIter), field))
+                if (!compareTwo(*mainItemIter, *nextItemIter, field))
                 {
                     std::swap(mainItemIter, nextItemIter);
                 }

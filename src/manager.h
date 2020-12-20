@@ -40,7 +40,7 @@ public:
     void readFile(QString fileName);
     void writeFile(QString fileName);
 
-    //bool compareTwo(const Transaction& left, const Transaction& right, ParameterType field) const;
+    bool compareTwo(const QSharedPointer<Transaction> left, const QSharedPointer<Transaction> right, ParameterType field) const;
     void sort(ParameterType field, bool isAscending);
     QString show() const;
     Money accounting ();

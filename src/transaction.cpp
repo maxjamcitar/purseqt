@@ -34,6 +34,15 @@ QString Transaction::getClassType () const
     return classType;
 }
 
+void Transaction::setDate (const QDate &otherDate)
+{
+    this->date = otherDate;
+}
+
+QDate Transaction::getDate () const
+{
+    return this->date;
+}
 
 void Transaction::setPrice (const Money &otherPrice)
 {
