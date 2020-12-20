@@ -6,6 +6,7 @@ AddExpense::AddExpense(QWidget *parent) :
     ui(new Ui::AddExpense)
 {
     ui->setupUi(this);
+
 }
 
 AddExpense::~AddExpense()

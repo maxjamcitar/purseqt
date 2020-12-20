@@ -1,13 +1,15 @@
-#include "money.h"
+#include "src/money.h"
 #include <QErrorMessage>
-#include <QtCore/QSet>
-#include <QtCore/QMap>
+#include <QSet>
+#include <QMap>
+
+// static variables
+QSet<QString> CurrConversion::currencyList = QSet<QString>();
+QMap<QString, float> CurrConversion::currencyMap = QMap<QString, float>();
+QString CurrConversion::activeCurrency = QString("USD");
 
 CurrConversion::CurrConversion()
 {
-    currencyList = QSet<QString>();
-    currencyMap = QMap<QString, float>();
-    activeCurrency = "USD";
     CurrConversion::addCurrency("USD", 1);
 }
 

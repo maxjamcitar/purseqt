@@ -2,6 +2,8 @@
 #define MONEY_H
 
 #include <QString>
+#include <QSet>
+#include <QMap>
 
 class CurrConversion
 {

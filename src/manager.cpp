@@ -1,4 +1,4 @@
-#include "manager.h"
+#include "src/manager.h"
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -232,6 +232,7 @@ void Manager::sort(ParameterType field, bool isAscending)
         mainItemIter = std::next(mainItemIter);
     }
 }
+
 
 Money Manager::accounting()
 {

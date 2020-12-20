@@ -2,6 +2,7 @@
 #define EXPENSE_H
 
 #include "transaction.h"
+#include "money.h"
 
 class Expense : public Transaction
 {

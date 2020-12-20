@@ -3,7 +3,7 @@
 Income::Income()
     : Transaction()
 {
-    Transaction::setClassType("Income");
+    this->setClassType("Income");
     this->date = QDate(0000, 00, 00);
     this->price = Money(0.0, CurrConversion::activeCurrency);
     this->source = QString("");
@@ -12,7 +12,7 @@ Income::Income()
 Income::Income(const QDate &date, const Money &price, const QString &comment, const QString &source)
     : Transaction(date, price, comment)
 {
-    Transaction::setClassType("Income");
+    this->setClassType("Income");
     this->date = date;
     this->setPrice(price);
     this->comment = comment;
@@ -22,7 +22,7 @@ Income::Income(const QDate &date, const Money &price, const QString &comment, co
 Income::Income(Income &otherInc)
     : Transaction(otherInc)
 {
-    Transaction::setClassType("Income");
+    this->setClassType("Income");
     this->date = otherInc.date;
     this->price = otherInc.price;
     this->source = otherInc.source;

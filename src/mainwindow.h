@@ -18,6 +18,8 @@ public:
 private slots:
     void on_buttonAddIncome_clicked();
 
+    void on_buttonAddExpense_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

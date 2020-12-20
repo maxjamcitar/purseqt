@@ -1,9 +1,10 @@
-#include "expense.h"
+#include "src/expense.h"
+#include "src/money.h"
 
 Expense::Expense()
     : Transaction()
 {
-    Transaction::setClassType("Expense");
+    this->setClassType("Expense");
     this->date = QDate(0000, 00, 00);
     this->price = Money(0.0, CurrConversion::activeCurrency);
     this->goods = QString("");
@@ -12,7 +13,7 @@ Expense::Expense()
 Expense::Expense(const QDate &date, const Money &price, const QString &comment, const QString &goods)
     : Transaction(date, price, comment)
 {
-    Transaction::setClassType("Expense");
+    this->setClassType("Expense");
     this->date = date;
     this->setPrice(price);
     this->comment = comment;
@@ -22,7 +23,7 @@ Expense::Expense(const QDate &date, const Money &price, const QString &comment, 
 Expense::Expense(Expense &otherTr)
     : Transaction(otherTr)
 {
-    Transaction::setClassType("Expense");
+    this->setClassType("Expense");
     this->date = otherTr.date;
     this->price = otherTr.price;
     this->goods = otherTr.goods;

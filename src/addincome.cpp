@@ -12,3 +12,4 @@ AddIncome::~AddIncome()
 {
     delete ui;
 }
+

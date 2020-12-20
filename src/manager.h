@@ -40,7 +40,7 @@ public:
     void readFile(QString fileName);
     void writeFile(QString fileName);
 
-    bool compareTwo(const Transaction& left, const Transaction& right, ParameterType field) const;
+    //bool compareTwo(const Transaction& left, const Transaction& right, ParameterType field) const;
     void sort(ParameterType field, bool isAscending);
     QString show() const;
     Money accounting ();
@@ -49,7 +49,6 @@ public:
     Money residual ();
 
 private:
-    bool compareTwo(const Transaction& left, const Transaction& right, ParameterType field, bool isAscending) const;
     std::list<QSharedPointer<Transaction>> dqueue;  // std::list because there is no such Qt container
 };
 

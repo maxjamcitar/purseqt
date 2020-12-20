@@ -11,24 +11,24 @@ TEMPLATE = app
 
 
 SOURCES += src/main.cpp \
-    addexpense.cpp \
-    addincome.cpp \
-    mainwindow.cpp \
+    src/addexpense.cpp \
+    src/addincome.cpp \
+    src/mainwindow.cpp \
     src/expense.cpp \
     src/income.cpp \
     src/money.cpp \
     src/manager.cpp \
     src/transaction.cpp
 
-HEADERS  += addexpense.h \
-    addincome.h \
-    mainwindow.h \
+HEADERS  += src/addexpense.h \
+    src/addincome.h \
+    src/mainwindow.h \
     src/expense.h \
     src/income.h \
     src/money.h \
     src/manager.h \
     src/transaction.h
 
-FORMS    += addexpense.ui \
-    addincome.ui \
-    mainwindow.ui
+FORMS    += ui/addexpense.ui \
+    ui/addincome.ui \
+    ui/mainwindow.ui

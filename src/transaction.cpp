@@ -2,7 +2,7 @@
 
 Transaction::Transaction()
 {
-    Transaction::setClassType("Transaction");
+    this->setClassType("Transaction");
     this->date = QDate(0000, 00, 00);
     this->price = Money(0.0, CurrConversion::activeCurrency);
     Transaction::setComment(QString(""));
@@ -10,7 +10,7 @@ Transaction::Transaction()
 
 Transaction::Transaction(const QDate &date, const Money &price, const QString comment)
 {
-    Transaction::setClassType("Transaction");
+    this->setClassType("Transaction");
     this->date = date;
     this->setPrice(price);
     this->comment = comment;
@@ -18,7 +18,7 @@ Transaction::Transaction(const QDate &date, const Money &price, const QString co
 
 Transaction::Transaction(const Transaction &otherTr)
 {
-    Transaction::setClassType("Transaction");
+    this->setClassType("Transaction");
     this->date = otherTr.date;
     this->price = otherTr.price;
     this->comment = otherTr.comment;
@@ -27,6 +27,23 @@ Transaction::Transaction(const Transaction &otherTr)
 Transaction::~Transaction()
 {
     //cout << "The destructor is called"<< endl;
+}
+
+QString Transaction::getClassType () const
+{
+    return classType;
+}
+
+
+void Transaction::setPrice (const Money &otherPrice)
+{
+    this->price = otherPrice;
+}
+
+
+Money Transaction::getPrice () const
+{
+    return this->price;
 }
 
 void Transaction::setComment(const QString &otherComment)
