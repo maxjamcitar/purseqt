@@ -2,6 +2,7 @@
 #define ADDEXPENSE_H
 
 #include <QDialog>
+#include "src/money.h"
 
 namespace Ui {
 class AddExpense;

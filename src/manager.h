@@ -8,8 +8,6 @@
 #include <QDebug>
 #include <list>
 
-//static const char* const fileName = "test.bin";
-
 class Manager
 {
 public:

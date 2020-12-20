@@ -1,4 +1,4 @@
-#include "income.h"
+#include "src/income.h"
 
 Income::Income()
     : Transaction()

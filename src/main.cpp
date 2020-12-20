@@ -1,6 +1,6 @@
 #include <QtWidgets/QApplication>
 //#include "purse.h"
-#include "mainwindow.h"
+#include "ui/mainwindow.h"
 
 int main(int argc, char *argv[])
 {

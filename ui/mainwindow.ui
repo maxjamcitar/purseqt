@@ -23,29 +23,34 @@
       <height>451</height>
      </rect>
     </property>
-   </widget>
-   <widget class="QScrollArea" name="scrollTransactions">
-    <property name="geometry">
-     <rect>
-      <x>770</x>
-      <y>50</y>
-      <width>20</width>
-      <height>451</height>
-     </rect>
+    <property name="sortingEnabled">
+     <bool>false</bool>
     </property>
-    <property name="widgetResizable">
-     <bool>true</bool>
-    </property>
-    <widget class="QWidget" name="scrollAreaWidgetContents">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>18</width>
-       <height>449</height>
-      </rect>
+    <column>
+     <property name="text">
+      <string>Inc/Exp</string>
      </property>
-    </widget>
+    </column>
+    <column>
+     <property name="text">
+      <string>New Column</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Value</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Source/Goods</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Comments</string>
+     </property>
+    </column>
    </widget>
    <widget class="QPushButton" name="buttonAddIncome">
     <property name="geometry">

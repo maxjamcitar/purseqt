@@ -1,5 +1,4 @@
 #include "src/expense.h"
-#include "src/money.h"
 
 Expense::Expense()
     : Transaction()

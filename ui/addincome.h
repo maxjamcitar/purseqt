@@ -2,6 +2,7 @@
 #define ADDINCOME_H
 
 #include <QDialog>
+#include "src/money.h"
 
 namespace Ui {
 class AddIncome;

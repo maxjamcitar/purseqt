@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 
+#include "src/manager.h"
+#include "src/money.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -22,6 +25,9 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    Manager mngr;
+    //CurrConversion currConversion;
 };
 
 #endif // MAINWINDOW_H
