@@ -2,10 +2,11 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <QErrorMessage>
 
 Manager::Manager()
 {
-    dqueue = std::list<Transaction>();
+    dqueue = std::list<QSharedPointer<Transaction>>();
 }
 
 Manager::Manager(Manager &otherManager)
@@ -18,7 +19,7 @@ Manager::~Manager()
     dqueue.clear();
 }
 
-std::list<Transaction> Manager::getList() const
+std::list<QSharedPointer<Transaction>> Manager::getList() const
 {
     return dqueue;
 }
@@ -33,12 +34,12 @@ std::size_t Manager::getSize()
     return dqueue.size();
 }
 
-void Manager::addBegin(const Transaction tran)
+void Manager::addBegin(QSharedPointer<Transaction> tran)
 {
    dqueue.push_front(tran);
 }
 
-void Manager::addEnd(const Transaction tran)
+void Manager::addEnd(QSharedPointer<Transaction> tran)
 {
     dqueue.push_back(tran);
 }
@@ -61,15 +62,15 @@ void Manager::delEnd(){
         qDebug() << "Failed to remove last element of std::list " << &(this->dqueue) << "as it is already empty.";
 }
 
-Transaction Manager::getBegin(){
+QSharedPointer<Transaction> Manager::getBegin(){
     return dqueue.front();
 }
 
-Transaction Manager::getEnd(){
+QSharedPointer<Transaction> Manager::getEnd(){
     return dqueue.back();
 }
 
-void Manager::setBegin(Transaction tran)
+void Manager::setBegin(QSharedPointer<Transaction> tran)
 {
     if (dqueue.size() != 0)
     {
@@ -77,7 +78,7 @@ void Manager::setBegin(Transaction tran)
     }
 }
 
-void Manager::setEnd(Transaction tran){
+void Manager::setEnd(QSharedPointer<Transaction> tran){
     if (dqueue.size() != 0)
     {
         dqueue.back() = tran;
@@ -89,44 +90,39 @@ void Manager::readFile(QString fileName){
     if (file.exists())
     {
         QDataStream stream(&file);
-        file.open( QIODevice::ReadOnly);
+        file.open(QIODevice::ReadOnly);
         dqueue.clear();
-        QString tip;
-        QString date;
-        QString need;
-        QString category;
-        QString comment;
-        int price;
-        node *tmp=new node;
+        QString classType;
         while(!file.atEnd())
         {
-            stream >> tip;
-            if (tip=="Inc")
+            stream >> classType;
+            if (classType == QString("Income"))
             {
-                Income *original = new Income();
-                stream >> date >> comment >> price;
-                original->setDate(date.toStdString());
-                original->setComment(comment.toStdString());
-                original->setPrice(price);
-                tmp->info=original;
-                addEnd(tmp->info);
+                Income incInst;
+                incInst.fromStreamRaw(stream);
+                QSharedPointer<Transaction> transInst = QSharedPointer<Transaction>(new Transaction, incInst);
+                addEnd(transInst);
             }
-            if (tip=="Exps")
+            else if (classType == QString("Expense"))
             {
-                Expenses *original = new Expenses();
-                stream >> date >> category >> need >> price;
-                original->setDate(date.toStdString());
-                original->setCategory(category.toStdString());
-                original->setNeed(need.toStdString());
-                original->setPrice(price);
-                tmp->info=original;
-                addEnd(tmp->info);
+                Expense expInst;
+                expInst.fromStreamRaw(stream);
+                QSharedPointer<Transaction> transInst = QSharedPointer<Transaction>(new Transaction, expInst);
+                addEnd(transInst);
+            }
+            else
+            {
+                QErrorMessage err;
+                err.showMessage(QString("Failed to parse a transaction (corrupted or unknown type " + classType + ")"));
             }
         }
         file.close();
     }
     else
-         qDebug() << "File " << fileName << "cannot be opened";
+    {
+        QErrorMessage err;
+        err.showMessage(QString("File " + fileName + "cannot be opened."));
+    }
 }
 
 void Manager::writeFile(QString fileName)
@@ -136,85 +132,149 @@ void Manager::writeFile(QString fileName)
     file.open(QIODevice::WriteOnly);
     for (auto iter = dqueue.begin(); iter != dqueue.end(); ++iter)
     {
-        iter->toStringRaw(stream);
+        (*iter)->toStreamRaw(stream);
     }
     file.close();
 }
 
-std::string Manager::show()
+QString Manager::show() const
 {
-    std::string res="";
-    if(size)
-        for (node *i=first; i!=NULL; i=i->next)
-            res=res+i->info->toString()+'\n';
-    else
-        res="Deque is empty";
-    return res;
+    QDataStream strStream;
+    QString result;
+    if (dqueue.size() == 0)
+        return QString ("Deque is empty");
+    for (auto iter = dqueue.begin(); iter != dqueue.end(); ++iter)
+    {
+        strStream << (*iter)->toString() << QString("\n");
+    }
+    strStream >> result;
+    return result;
 }
 
-void Manager::sort(Parameter field, bool course){
-    node *one = first;
-    node *other = NULL;
-    while(one){
-        other = one->next;
-        while (other){
-            if (other->info->compare(one->info,field,course)){
-                Base* some;
-                some = other->info;
-                other->info = one->info;
-                one->info = some;
-            }
-            other = other->next;
-        }
-        one = one->next;
+bool Manager::compareTwo(const Transaction& left, const Transaction& right, ParameterType field) const
+{
+    switch (field)
+    {
+
+    case ParameterType::PRICE:
+        return (left.getPrice() > right.getPrice()) ? true : false;
+        break;
+
+    case ParameterType::CATEGORY:
+        return (left.getCategory() > right.getCategory()) ? true : false;
+        break;
+
+    default:
+        qDebug() << QString("Unknown parameter. Sorting by date");
+
+    case ParameterType::DATE:
+        return (left.getDate() > right.getDate()) ? true : false;
+        break;
     }
 }
 
-int Manager::accounting()
+void Manager::sort(ParameterType field, bool isAscending)
 {
-    int res=0;
-    if(size)
-        for (node *i=first; i!=NULL; i=i->next)
-            res=res+i->info->getPrice();
-    else
-        res=-1;
-    return res;
-}
-
-int Manager::accountingExps()
-{
-    int res=0;
-    if(size){
-        for (node *i=first; i!=NULL; i=i->next)
-            if (i->info->check()=="Exps")
-                res=res+i->info->getPrice();}
-    else
-        res=-1;
-    return res;
-}
-
-int Manager::accountingInc()
-{
-    int res=0;
-    if(size){
-        for (node *i=first; i!=NULL; i=i->next)
-            if (i->info->check()=="Inc")
-                res=res+i->info->getPrice();}
-    else
-        res=-1;
-    return res;
-}
-
-int Manager::residual()
-{
-    int res=0;
-    if(size){
-        for (node *i=first; i!=NULL; i=i->next)
-            if (i->info->check()=="Inc")
-                res=res+i->info->getPrice();
+    if (dqueue.size() == 0)
+        qDebug() << QString("No need to sort manager dqueue as it's empty");
+    else if (dqueue.size() == 0)
+        qDebug() << QString("No need to sort manager dqueue as it contains only 1 item");
+    auto mainItemIter = dqueue.begin();
+    // this is basically bubble sort
+    while(mainItemIter != dqueue.end())
+    {
+        auto nextItemIter = std::next(mainItemIter);
+        while (nextItemIter != dqueue.end())
+        {
+            if (isAscending)
+            {
+                if (compareTwo(*(*mainItemIter), *(*mainItemIter), field))
+                {
+                    std::swap(mainItemIter, nextItemIter);
+                }
+            }
             else
-                res=res-i->info->getPrice();}
+                if (!compareTwo(*(*mainItemIter), *(*mainItemIter), field))
+                {
+                    std::swap(mainItemIter, nextItemIter);
+                }
+            nextItemIter = std::next(nextItemIter);
+        }
+        mainItemIter = std::next(mainItemIter);
+    }
+}
+
+Money Manager::accounting()
+{
+    Money res;
+    if(dqueue.size())
+    {
+        for (auto iter = dqueue.begin(); iter != dqueue.end(); ++iter)
+        {
+            res += (*iter)->getPrice();
+        }
+    }
     else
-        res=+-666;
+        res.setValue(-1);
+    return res;
+}
+
+Money Manager::accountingExps()
+{
+    Money res;
+    if(dqueue.size())
+    {
+        for (auto iter = dqueue.begin(); iter != dqueue.end(); ++iter)
+        {
+            if ((*iter)->getClassType() == QString("Expense"))
+            {
+                res += (*iter)->getPrice();
+            }
+        }
+    }
+    else
+        res.setValue(-1);
+    return res;
+}
+
+Money Manager::accountingIncs()
+{
+    Money res;
+    if(dqueue.size())
+    {
+        for (auto iter = dqueue.begin(); iter != dqueue.end(); ++iter)
+        {
+            if ((*iter)->getClassType() == QString("Income"))
+            {
+                res += (*iter)->getPrice();
+            }
+        }
+    }
+    else
+        res.setValue(-1);
+    return res;
+}
+
+Money Manager::residual()
+{
+    Money res;
+    if(dqueue.size())
+    {
+        for (auto iter = dqueue.begin(); iter != dqueue.end(); ++iter)
+        {
+            if ((*iter)->getClassType() == QString("Income"))
+            {
+                res += (*iter)->getPrice();
+            }
+            else if ((*iter)->getClassType() == QString("Expense"))
+            {
+                res -= (*iter)->getPrice();
+            }
+            else
+                qDebug() << "Transaction with unidentified class type in dqueue";
+        }
+    }
+    else
+        res.setValue(0);
     return res;
 }

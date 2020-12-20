@@ -12,9 +12,9 @@ public:
     ~Income();
     void setSource(const QString &otherSource);
     QString getSource() const;
-    QString toString() const override;
-    QDataStream& toStreamRaw(QDataStream &out) const override;
-    Income fromStreamRaw(QDataStream &out) const override;
+    virtual QString toString() const override;
+    virtual QDataStream& toStreamRaw(QDataStream &out) const override;
+    Income fromStreamRaw(QDataStream &out) const;
 private:
     QString source;
 };

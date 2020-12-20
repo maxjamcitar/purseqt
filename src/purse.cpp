@@ -17,13 +17,19 @@ Purse::Purse(QWidget *parent) :
     ui->setupUi(this);
     ui->label->setStyleSheet("color: rgb(27, 214, 10)");
     ui->label_2->setStyleSheet("color: rgb(234, 35, 4)");
-    Manager *test;
-    test=new Manager;
-    test->read(fileName);
+
+    QString fileName ("test.bin");
+    Manager mngr;
+    mngr.readFile(fileName);
     ui->pushButton_10->setStyleSheet("color: rgb(234, 35, 4)");
     ui->pushButton_11->setStyleSheet("color: rgb(27, 214, 10)");
     ui->lineEdit_7->setStyleSheet("color: rgb(234, 35, 4)");
     ui->lineEdit_8->setStyleSheet("color: rgb(27, 214, 10)");
+
+    // currency initialization
+    CurrConversion currConvInst;
+    CurrConversion::addCurrency("RUB", 73.68);  // todo import coef from elsewhere
+    CurrConversion::changeActiveCurrency("RUB");
 }
 
 Purse::~Purse()
@@ -32,195 +38,185 @@ Purse::~Purse()
 }
 
 
-void Purse::showing(Manager *test)
+void Purse::showing(Manager mngr)
 {
-    ui->tableWidget->setRowCount(test->whatSize());
-    int i;
-    int n=test->whatSize();
-    if (test->whatSize()>0)
-        for (i=0;i<n;i++){
-            if (test->getBegin()->check()=="Inc"){
-                Income *original = static_cast<Income*>(test->getBegin());
+    QString dateFormat = QString("dd.MM.yyyy");
+    std::size_t dqSize = mngr.getSize();
+    ui->tableWidget->setRowCount(dqSize);
+    if (dqSize)
+        for (std::size_t i = 0; i < dqSize; i++)
+        {
+            if (mngr.getBegin()->getClassType() == QString("Income"))
+            {
+                QSharedPointer<Income> incInst = QSharedPointer<Income>(new Income, mngr.getBegin());
                 QTableWidgetItem *tmm = new QTableWidgetItem
-                        (QString::fromStdString(original->getDate()));
+                        (incInst->getDate().toString(dateFormat));
                 ui->tableWidget->setItem(i,0,tmm);
                 ui->tableWidget->item(i,0)->setBackground(Qt::green);
                 QTableWidgetItem *im = new QTableWidgetItem("");
                 ui->tableWidget->setItem(i,1,im);
                 ui->tableWidget->item(i,1)->setBackground(Qt::green);
                 QTableWidgetItem *it = new QTableWidgetItem
-                        (QString::fromStdString(original->getComment()));
+                        (incInst->getComment());
                 ui->tableWidget->setItem(i,2,it);
                 ui->tableWidget->item(i,2)->setBackground(Qt::green);
                 QTableWidgetItem *t = new QTableWidgetItem("");
                 ui->tableWidget->setItem(i,3,t);
                 ui->tableWidget->item(i,3)->setBackground(Qt::green);
                 QTableWidgetItem *imt = new QTableWidgetItem
-                        (QString::number(original->getPrice()));
+                        (incInst->getPrice().to_str(QString(" ")));
                 ui->tableWidget->setItem(i,4,imt);
                 ui->tableWidget->item(i,4)->setBackground(Qt::green);
-                test->delBegin();}
-            else if (test->getBegin()->check()=="Exps"){
-                Expenses *original = static_cast<Expenses*>(test->getBegin());
+                mngr.delBegin();
+            }
+            else if (mngr.getBegin()->getClassType() == QString("Expense"))
+            {
+                QSharedPointer<Expense> expInst = QSharedPointer<Expense>(new Expense, mngr.getBegin());
                 QTableWidgetItem *itmo = new QTableWidgetItem
-                        (QString::fromStdString(original->getDate()));
+                        (expInst->getDate().toString(dateFormat));
                 ui->tableWidget->setItem(i,0,itmo);
                 ui->tableWidget->item(i,0)->setBackground(Qt::red);
                 QTableWidgetItem *ito = new QTableWidgetItem
-                        (QString::fromStdString(original->getNeed()));
+                        (expInst->getGoods());
                 ui->tableWidget->setItem(i,1,ito);
                 ui->tableWidget->item(i,1)->setBackground(Qt::red);
                 QTableWidgetItem *to = new QTableWidgetItem("");
                 ui->tableWidget->setItem(i,2,to);
                 ui->tableWidget->item(i,2)->setBackground(Qt::red);
                 QTableWidgetItem *imo = new QTableWidgetItem
-                        (QString::fromStdString(original->getCategory()));
+                        (expInst->getCategory());
                 ui->tableWidget->setItem(i,3,imo);
                 ui->tableWidget->item(i,3)->setBackground(Qt::red);
                 QTableWidgetItem *imto = new QTableWidgetItem
-                        (QString::number(original->getPrice()));
+                        (expInst->getPrice().to_str(QString(" ")));
                 ui->tableWidget->setItem(i,4,imto);
                 ui->tableWidget->item(i,4)->setBackground(Qt::red);
-                test->delBegin();}}
+                mngr.delBegin();
+            }
+        }
 }
 
 void Purse::on_pushButton_1_clicked()
 {
-    Manager *test;
-    test=new Manager;
-    test->read(fileName);
-    Income *obj=new Income();
-    obj->setDate(ui->lineEdit_1->text().toStdString());
-    obj->setComment(ui->lineEdit_6->text().toStdString());
-    obj->setPrice(ui->lineEdit_2->text().toInt());
-    Manager *t;
-    t=new Manager();
-    t->read(fileName);
-    int som = obj->getPrice();
-    string some = obj->getDate();
-        if ((some>"2018-05-15")||(some<"1900-01-01")||(some.length()!=10))
-            QMessageBox::information
-                    (this,"INFO","DATE is wrong! ARE YOU SERIOUS?");
-        else{
-            if (som<0)
-                QMessageBox::information
-                        (this,"INFO","PRICE is wrong! Pay attention");
-            else{
-            test->addBegin(obj);
-            test->write(fileName);
-            showing(test);}}
-    delete obj;
+    QString fileName ("test.bin");
+    Manager mngr;
+    mngr.readFile(fileName);
+    QSharedPointer<Income> incItem = QSharedPointer<Income>(new Income, mngr.getBegin());
+    incItem->setDate(ui->lineEdit_1->text().toStdString());
+    incItem->setComment(QString(ui->lineEdit_6->text().toStdString()));
+    incItem->setPrice(ui->lineEdit_2->text());
+    Manager mngrShow (mngr);
+    Money itemPrice = incItem->getPrice();
+    QDate itemDate = incItem->getDate();
+    if (itemPrice.getValue() < 0)
+    {
+        QMessageBox::information (this,"INFO","Price is negative.");
+    }
+    else
+    {
+        mngr.addBegin(incItem);
+        mngr.writeFile(fileName);
+        showing(mngr);
+    }
 }
 
 void Purse::on_pushButton_2_clicked()
 {
-    Manager *test;
-    test=new Manager;
-    test->read(fileName);
-    Income *obj=new Income();
-    obj->setDate(ui->lineEdit_1->text().toStdString());
-    obj->setComment(ui->lineEdit_6->text().toStdString());
-    obj->setPrice(ui->lineEdit_2->text().toInt());
-    Manager *t;
-    t=new Manager();
-    t->read(fileName);
-    int som = obj->getPrice();
-    string some = obj->getDate();
-    if ((some>"2018-05-15")||(some<"1900-01-01")||(some.length()!=10))
-            QMessageBox::information
-                    (this,"INFO","DATE is wrong! ARE YOU SERIOUS?");
-        else{
-            if (som<0)
-                QMessageBox::information
-                        (this,"INFO","PRICE is wrong! Pay attention");
-            else{
-            test->addEnd(obj);
-            test->write(fileName);
-            showing(test);}}
-    delete obj;
+    QString fileName ("test.bin");
+    Manager mngr;
+    mngr.readFile(fileName);
+    QSharedPointer<Expense> expItem = QSharedPointer<Expense>(new Expense, mngr.getBegin());
+    expItem->setDate(ui->lineEdit_1->text().toStdString());
+    expItem->setComment(QString(ui->lineEdit_6->text().toStdString()));
+    expItem->setPrice(ui->lineEdit_2->text());
+    Manager mngrShow (mngr);
+    Money itemPrice = expItem->getPrice();
+    QDate itemDate = expItem->getDate();
+    if (itemPrice.getValue() < 0)
+    {
+        QMessageBox::information (this,"INFO","Price is negative.");
+    }
+    else
+    {
+        mngr.addBegin(expItem);
+        mngr.writeFile(fileName);
+        showing(mngr);
+    }
 }
 
 void Purse::on_pushButton_3_clicked()
 {
-    Manager *test;
-    test=new Manager;
-    test->read(fileName);
-    Expenses *obj=new Expenses();
-    obj->setDate(ui->lineEdit_3->text().toStdString());
-    obj->setNeed(ui->lineEdit_4->text().toStdString());
-    obj->setCategory(ui->comboBox_2->currentText().toStdString());
-    obj->setPrice(ui->lineEdit_5->text().toInt());
-    Manager *t;
-    t=new Manager();
-    t->read(fileName);
-    int som = obj->getPrice();
-    string some = obj->getDate();
-        if ((some>"2018-05-15")||(some<"1900-01-01")||(some.length()!=10))
-            QMessageBox::information
-                    (this,"INFO","DATE is wrong! ARE YOU SERIOUS?");
-        else{
-            if (som<0)
-                QMessageBox::information
-                        (this,"INFO","PRICE is wrong! Pay attention");
-            else{
-            test->addBegin(obj);
-            test->write(fileName);
-            showing(test);}}
-    delete obj;
+    QString fileName ("test.bin");
+    Manager mngr;
+    mngr.readFile(fileName);
+    QSharedPointer<Expense> expItem = QSharedPointer<Expense>(new Expense, mngr.getBegin());
+    expItem->setDate(ui->lineEdit_3->text().toStdString());
+    expItem->setGoods(ui->lineEdit_4->text());
+    expItem->setComment(QString(ui->lineEdit_2->text().toStdString()));
+    expItem->setPrice(ui->lineEdit_5->text());
+    Manager mngrShow (mngr);
+    Money itemPrice = expItem->getPrice();
+    QDate itemDate = expItem->getDate();
+    if (itemPrice.getValue() < 0)
+    {
+        QMessageBox::information (this,"INFO","Price is negative.");
+    }
+    else
+    {
+        mngr.addBegin(expItem);
+        mngr.writeFile(fileName);
+        showing(mngr);
+    }
 }
 
 void Purse::on_pushButton_4_clicked()
 {
-    Manager *test;
-    test=new Manager;
-    test->read(fileName);
-    Expenses *obj=new Expenses();
-    obj->setDate(ui->lineEdit_3->text().toStdString());
-    obj->setNeed(ui->lineEdit_4->text().toStdString());
-    obj->setCategory(ui->comboBox_2->currentText().toStdString());
-    obj->setPrice(ui->lineEdit_5->text().toInt());
-    Manager *t;
-    t=new Manager();
-    t->read(fileName);
-    int som = obj->getPrice();
-    string some = obj->getDate();
-        if ((some>"2018-05-15")||(some<"1900-01-01")||(some.length()!=10))
-            QMessageBox::information
-                    (this,"INFO","DATE is wrong! ARE YOU SERIOUS?");
-        else{
-            if (som<0)
-                QMessageBox::information
-                        (this,"INFO","PRICE is wrong! Pay attention");
-            else{
-            test->addEnd(obj);
-            test->write(fileName);
-            showing(test);}}
-    delete obj;
+    QString fileName ("test.bin");
+    Manager mngr;
+    mngr.readFile(fileName);
+    QSharedPointer<Expense> expItem = QSharedPointer<Expense>(new Expense, mngr.getBegin());
+    expItem->setDate(ui->lineEdit_3->text().toStdString());
+    expItem->setGoods(ui->lineEdit_4->text());
+    expItem->setComment(QString(ui->lineEdit_2->text().toStdString()));
+    expItem->setPrice(ui->lineEdit_5->text());
+    Manager mngrShow (mngr);
+    Money itemPrice = expItem->getPrice();
+    QDate itemDate = expItem->getDate();
+    if (itemPrice.getValue() < 0)
+    {
+        QMessageBox::information (this,"INFO","Price is negative.");
+    }
+    else
+    {
+        mngr.addBegin(expItem);
+        mngr.writeFile(fileName);
+        showing(mngr);
+    }
 }
 
 void Purse::on_pushButton_5_clicked()
 {
-    Manager *test;
-    test=new Manager;
-    test->read(fileName);
-    test->delBegin();
-    test->write(fileName);
-    showing(test);
+    QString fileName ("test.bin");
+    Manager mngr;
+    mngr.readFile(fileName);
+    mngr.delBegin();
+    mngr.writeFile(fileName);
+    showing(mngr);
 }
 
 void Purse::on_pushButton_6_clicked()
 {
-    Manager *test;
-    test=new Manager;
-    test->read(fileName);
-    test->delEnd();
-    test->write(fileName);
-    showing(test);
+    QString fileName ("test.bin");
+    Manager mngr;
+    mngr.readFile(fileName);
+    mngr.delEnd();
+    mngr.writeFile(fileName);
+    showing(mngr);
 }
 
 void Purse::on_pushButton_7_clicked()
 {
-    string parameter, categ;
+    QString parameter, categ;
     bool way;
     Parameter field;
     Manager *test;

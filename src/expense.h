@@ -12,9 +12,9 @@ public:
     ~Expense();
     void setGoods(const QString &otherGoods);
     QString getGoods() const;
-    QString toString() const override;
-    QDataStream& toStreamRaw(QDataStream &out) const override;
-    Expense fromStreamRaw(QDataStream &out) const override;
+    virtual QString toString() const override;
+    virtual QDataStream& toStreamRaw(QDataStream &out) const override;
+    Expense fromStreamRaw(QDataStream &out) const;
 private:
     QString goods;
 };

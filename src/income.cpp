@@ -1,16 +1,18 @@
 #include "income.h"
 
 Income::Income()
+    : Transaction()
 {
     Transaction::setClassType("Income");
     this->date = QDate(0000, 00, 00);
     this->category = QString("OTHER");
     categoryList.insert("OTHER");
-    this->price = Money(0.0, Money::activeCurrency);
+    this->price = Money(0.0, CurrConversion::activeCurrency);
     this->source = QString("");
 }
 
 Income::Income(const QDate &date, const QString &category, const Money &price, const QString &comment, const QString &source)
+    : Transaction(date, category, price, comment)
 {
     Transaction::setClassType("Income");
     this->date = date;
@@ -55,24 +57,30 @@ QString Income::toString() const
             .arg(strDate).arg(this->getCategory()).arg(this->price.to_str()).arg(this->source).arg(this->comment);
 }
 
-QDataStream& Income::toStringRaw(QDataStream &out) const
+QDataStream& Income::toStreamRaw(QDataStream &out) const
 {
     out << this->classType
            << this->date
            << this->category
-           << this->price.to_str(QString(""))
+           << this->price.getValue() << this->price.getCurrency()
            << this->source
            << this->comment;
     return out;
 }
 
-Income* Income::fromStringRaw(QDataStream &out) const
+Income Income::fromStreamRaw(QDataStream &out) const
 {
-    out >> this->classType
-           >> this->date
-           >> this->category
-           >> this->price.to_str(QString(""))
-           >> this->source
-           >> this->comment;
-    return out;
+    Income ret;
+    float priceValue;
+    QString priceStr;
+    out
+           //>> ret.classType
+           >> ret.date
+           >> ret.category
+           >> priceValue >> priceStr
+           >> ret.source
+           >> ret.comment;
+    ret.price.setValue(priceValue);
+    ret.price.convertTo(priceStr);
+    return ret;
 }

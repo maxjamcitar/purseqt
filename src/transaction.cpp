@@ -5,7 +5,7 @@ Transaction::Transaction()
     Transaction::setClassType("Transaction");
     this->date = QDate(0000, 00, 00);
     Transaction::setCategory("OTHER");
-    this->price = Money(0.0, Money::activeCurrency);
+    this->price = Money(0.0, CurrConversion::activeCurrency);
     Transaction::setComment(QString(""));
 }
 
@@ -62,28 +62,35 @@ QString Transaction::toString() const
             .arg(strDate).arg(this->getCategory()).arg(this->price.to_str()).arg(this->comment);
 }
 
-QDataStream& Transaction::toStringRaw(QDataStream &out) const
+QDataStream& Transaction::toStreamRaw(QDataStream &out) const
 {
     out << this->classType
            << this->date
            << this->category
-           << this->price.to_str(QString(""))
+           << this->price.getValue() << this->price.getCurrency()
            << this->comment;
     return out;
 }
 
+/*
+
 Transaction Transaction::fromStreamRaw(QDataStream &out) const
 {
     Transaction ret;
+    float priceValue;
     QString priceStr;
-    out >> ret.classType
+    out
+           //>> ret.classType
            >> ret.date
            >> ret.category
-           >>
+           >> priceValue >> priceStr
            >> ret.comment;
-    ret.price = priceStr.
+    ret.price.setValue(priceValue);
+    ret.price.convertTo(priceStr);
     return ret;
 }
+
+*/
 
 void Transaction::setClassType (const QString &otherClassType)
 {

@@ -1,16 +1,18 @@
 #include "expense.h"
 
 Expense::Expense()
+    : Transaction()
 {
     Transaction::setClassType("Expense");
     this->date = QDate(0000, 00, 00);
     this->category = QString("OTHER");
     categoryList.insert("OTHER");
-    this->price = Money(0.0, Money::activeCurrency);
+    this->price = Money(0.0, CurrConversion::activeCurrency);
     this->goods = QString("");
 }
 
 Expense::Expense(const QDate &date, const QString &category, const Money &price, const QString &comment, const QString &goods)
+    : Transaction(date, category, price, comment)
 {
     Transaction::setClassType("Expense");
     this->date = date;
@@ -55,13 +57,32 @@ QString Expense::toString() const
             .arg(strDate).arg(this->getCategory()).arg(this->price.to_str()).arg(this->goods).arg(this->comment);
 }
 
-QDataStream& Expense::toStringRaw(QDataStream &out) const
+
+QDataStream& Expense::toStreamRaw(QDataStream &out) const
 {
     out << this->classType
            << this->date
            << this->category
-           << this->price.to_str(QString(""))
+           << this->price.getValue() << this->price.getCurrency()
            << this->goods
            << this->comment;
     return out;
 }
+
+Expense Expense::fromStreamRaw(QDataStream &out) const
+{
+    Expense ret;
+    float priceValue;
+    QString priceStr;
+    out
+           //>> ret.classType
+           >> ret.date
+           >> ret.category
+           >> priceValue >> priceStr
+           >> ret.goods
+           >> ret.comment;
+    ret.price.setValue(priceValue);
+    ret.price.convertTo(priceStr);
+    return ret;
+}
+

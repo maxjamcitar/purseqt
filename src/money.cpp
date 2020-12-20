@@ -7,6 +7,7 @@ CurrConversion::CurrConversion()
 {
     currencyList = QSet<QString>();
     currencyMap = QMap<QString, float>();
+    activeCurrency = "USD";
     CurrConversion::addCurrency("USD", 1);
 }
 
@@ -15,13 +16,13 @@ CurrConversion::~CurrConversion()
     // only smart pointers used
 }
 
-void CurrConversion::addCurrency (QString currName, float coef)
+void CurrConversion::addCurrency (const QString& currName, const float coef)
 {
     currencyList.insert(currName);
     currencyMap.insert(currName, coef);
 }
 
-void CurrConversion::removeCurrency (QString currName)
+void CurrConversion::removeCurrency (const QString& currName)
 {
     currencyList.remove(currName);
     currencyMap.remove(currName);
@@ -33,7 +34,16 @@ void CurrConversion::clearMap ()
     currencyMap.clear();
 }
 
-float CurrConversion::getCoef (QString currName)
+bool CurrConversion::isCurrSaved (const QString& currName)
+{
+    auto iter = currencyList.find(currName);
+    if (iter == currencyList.end())
+        return false;
+    else
+        return true;
+}
+
+float CurrConversion::getCoef (const QString& currName)
 {
     auto currIter = currencyMap.find(currName);
     if (currIter == currencyMap.end())
@@ -45,13 +55,30 @@ float CurrConversion::getCoef (QString currName)
     return currIter.value();
 }
 
+
+QString CurrConversion::getActiveCurrency ()
+{
+    return activeCurrency;
+}
+
+void CurrConversion::changeActiveCurrency (const QString& otherCurr)
+{
+    if (!isCurrSaved(otherCurr))
+    {
+        QErrorMessage err;
+        err.showMessage(QString("Failed to change active currency (currency " + otherCurr + " not found)."));
+    }
+    else
+        activeCurrency = otherCurr;
+}
+
+
 //------------------------------------------------------------------------------------------------------------
 
 Money::Money()
 {
     value = 0;
-    activeCurrency = "USD";
-    currency = activeCurrency;
+    currency = CurrConversion::activeCurrency;
 }
 
 Money::~Money()
@@ -62,9 +89,10 @@ Money::~Money()
 Money::Money(float otherValue)
 {
     value = otherValue;
+    currency = CurrConversion::activeCurrency;
 }
 
-Money::Money(float otherValue, QString otherCurr)
+Money::Money(const float otherValue, const QString& otherCurr)
 {
     float coefOther = CurrConversion::getCoef(otherCurr);
     float coefThis = CurrConversion::getCoef(currency);
@@ -72,7 +100,7 @@ Money::Money(float otherValue, QString otherCurr)
     currency = otherCurr;
 }
 
-Money::Money(Money &otherMoney)
+Money::Money(const Money &otherMoney)
 {
     Money(otherMoney.getValue(), otherMoney.getCurrency());
 }
@@ -82,7 +110,7 @@ float Money::getValue() const
     return value;
 }
 
-void Money::setValue (float otherValue)
+void Money::setValue (const float otherValue)
 {
     value = otherValue;
 }
@@ -92,48 +120,76 @@ QString Money::getCurrency() const
     return currency;
 }
 
-void Money::convertTo (QString otherCurr)
+void Money::convertTo (const QString &otherCurr)
 {
     float coefOther = CurrConversion::getCoef(otherCurr);
     float coefThis = CurrConversion::getCoef(currency);
-    value *= coefThis / coefOther;
-    currency = otherCurr;
+    if (coefOther != 0 && coefThis != 0)
+    {
+        value *= coefThis / coefOther;
+        currency = otherCurr;
+    }
 }
 
-bool Money::operator> (Money &otherMoney) const
+void Money::operator= (const Money &otherMoney)
+{
+    Money otherCopy (otherMoney);
+    otherCopy.convertTo(this->currency);
+    this->value = otherCopy.getValue();
+    this->currency = otherCopy.getCurrency();
+}
+
+bool Money::operator> (const Money &otherMoney) const
 {
     float coefOther = CurrConversion::getCoef(otherMoney.getCurrency());
     float coefThis = CurrConversion::getCoef(currency);
-    return (this->value / coefThis) > (otherMoney.getValue() / coefOther);
+    return (this->value / coefThis) > (otherMoney.getValue() / coefOther);  // comparing USDs
 }
 
-bool Money::operator< (Money &otherMoney) const
+bool Money::operator< (const Money &otherMoney) const
 {
     return !(operator>(otherMoney));
 }
 
-bool Money::operator== (Money &otherMoney) const
+bool Money::operator== (const Money &otherMoney) const
 {
     return !(operator>(otherMoney) || operator<(otherMoney));
 }
 
+Money Money::operator+ (const Money &otherMoney) const
+{
+    float coefOther = CurrConversion::getCoef(otherMoney.getCurrency());
+    float coefThis = CurrConversion::getCoef(currency);
+    Money result((this->value / coefThis) + (otherMoney.getValue() / coefOther), "USD");
+    result.convertTo(CurrConversion::activeCurrency);
+    return result;  // comparing USDs
+}
+
+void Money::operator+= (const Money &otherMoney)
+{
+    Money result = *this + otherMoney;
+    result.convertTo(this->currency);
+    this->value = result.getValue();
+}
+
+Money Money::operator- (const Money &otherMoney) const
+{
+    float coefOther = CurrConversion::getCoef(otherMoney.getCurrency());
+    float coefThis = CurrConversion::getCoef(currency);
+    Money result((this->value / coefThis) - (otherMoney.getValue() / coefOther), "USD");
+    result.convertTo(CurrConversion::activeCurrency);
+    return result;  // comparing USDs
+}
+
+void Money::operator-= (const Money &otherMoney)
+{
+    Money result = *this - otherMoney;
+    result.convertTo(this->currency);
+    this->value = result.getValue();
+}
+
+
 QString Money::to_str (QString sep) const
 {
     return QStringLiteral("%1%2%3").arg(this->getValue()).arg(sep).arg(this->getCurrency());
-}
-
-Money Money::parseString (QString str, QString sep) const
-{
-    QString readToken;
-    QString token = str.QStringRef();
-}
-
-QString Money::getActiveCurrency ()
-{
-    return activeCurrency;
-}
-
-void Money::changeActiveCurrency (QString otherCurr)
-{
-    activeCurrency = otherCurr;
 }

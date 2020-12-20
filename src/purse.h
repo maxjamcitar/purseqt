@@ -36,7 +36,7 @@ private slots:
     void on_pushButton_13_clicked();
     void on_pushButton_14_clicked();
     void on_pushButton_15_clicked();
-    void showing(Manager *test);
+    void showing(Manager mngr);
 };
 
 #endif // PURSE_H

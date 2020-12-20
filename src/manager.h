@@ -13,41 +13,44 @@
 class Manager
 {
 public:
+    enum ParameterType {DATE = 0, PRICE, CATEGORY};
+    static ParameterType Parameter; // allows to use static enum
     Manager();
     Manager(Manager &otherManager);
     ~Manager();
 
-    std::list<Transaction> getList() const;
+    std::list<QSharedPointer<Transaction>> getList() const;
 
     bool isEmpty();
 
     std::size_t getSize();
 
-    void addBegin(const Transaction tran);
-    void addEnd(const Transaction tran);
+    void addBegin(QSharedPointer<Transaction> tran);
+    void addEnd(QSharedPointer<Transaction> tran);
 
     void delBegin();
     void delEnd();
 
-    Transaction getBegin();
-    Transaction getEnd();
+    QSharedPointer<Transaction> getBegin();
+    QSharedPointer<Transaction> getEnd();
 
-    void setBegin(Transaction tran);
-    void setEnd(Transaction tran);
+    void setBegin(QSharedPointer<Transaction> tran);
+    void setEnd(QSharedPointer<Transaction> tran);
 
     void readFile(QString fileName);
     void writeFile(QString fileName);
 
-    void sort(Transaction::Parameter field, bool switcher);
-    std::string show();
-    int accounting ();
-    int accountingExps ();
-    int accountingInc ();
-    int residual ();
+    bool compareTwo(const Transaction& left, const Transaction& right, ParameterType field) const;
+    void sort(ParameterType field, bool isAscending);
+    QString show() const;
+    Money accounting ();
+    Money accountingExps ();
+    Money accountingIncs ();
+    Money residual ();
 
 private:
-    std::list<Transaction> dqueue;  // std::list because there is no such Qt container
-    unsigned int size;
+    bool compareTwo(const Transaction& left, const Transaction& right, ParameterType field, bool isAscending) const;
+    std::list<QSharedPointer<Transaction>> dqueue;  // std::list because there is no such Qt container
 };
 
 #endif // MANAGER_H

@@ -1,19 +1,23 @@
 #ifndef MONEY_H
 #define MONEY_H
 
-#include "QtCore/QString"
+#include <QString>
 
 class CurrConversion
 {
 public:
     CurrConversion();
     ~CurrConversion();
-    static void addCurrency (QString currName, float coef);
-    static void removeCurrency (QString currName);
+    static void addCurrency (const QString& currName, const float coef);
+    static void removeCurrency (const QString& currName);
     static void clearMap ();
-    static float getCoef (QString currName);
+    static float getCoef (const QString& currName);
+    static bool isCurrSaved (const QString& currName);
+    static QString getActiveCurrency ();
+    static void changeActiveCurrency (const QString& otherCurr);
     // todo import/export from/to files (or online)
     static QSet<QString> currencyList;  // currencies are named with compliance with ISO 4217
+    static QString activeCurrency;
 private:
     static QMap<QString, float> currencyMap;   // "float" is coefficient for conversion: 1 USD -> "float" CURR
 };
@@ -23,20 +27,25 @@ class Money
 public:
     Money();
     ~Money();
-    Money(float otherValue);
-    Money(float otherValue, QString otherCurr);
-    Money(Money &otherMoney);
+    Money(const float otherValue);
+    Money(const float otherValue, const QString& otherCurr);
+    Money(const Money &otherMoney);
     float getValue() const;
     void setValue (float otherValue);
     QString getCurrency() const;
-    void convertTo (QString otherCurr);
-    bool operator> (Money &otherMoney) const;
-    bool operator< (Money &otherMoney) const;
-    bool operator== (Money &otherMoney) const;
+    void convertTo (const QString &otherCurr);
+    void operator= (const Money &otherMoney);
+    bool operator> (const Money &otherMoney) const;
+    bool operator< (const Money &otherMoney) const;
+    bool operator== (const Money &otherMoney) const;
+    Money operator+ (const Money &otherMoney) const;
+    void operator+= (const Money &otherMoney);
+    Money operator- (const Money &otherMoney) const;
+    void operator-= (const Money &otherMoney);
     QString to_str (QString sep=QString(" ")) const;
+    Money parseString (const QString &str, const QString &sep) const;
     static QString getActiveCurrency ();
     static void changeActiveCurrency (QString otherCurr);
-    static QString activeCurrency;
 private:
     float value;
     QString currency;
