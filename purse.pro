@@ -10,19 +10,25 @@ TARGET = purseqt
 TEMPLATE = app
 
 
-SOURCES += src/main.cpp\
+SOURCES += src/main.cpp \
+    addexpense.cpp \
+    addincome.cpp \
+    mainwindow.cpp \
     src/expense.cpp \
     src/income.cpp \
     src/money.cpp \
-    src/purse.cpp \
     src/manager.cpp \
     src/transaction.cpp
 
-HEADERS  += src/purse.h \
+HEADERS  += addexpense.h \
+    addincome.h \
+    mainwindow.h \
     src/expense.h \
     src/income.h \
     src/money.h \
     src/manager.h \
     src/transaction.h
 
-FORMS    += purse.ui
+FORMS    += addexpense.ui \
+    addincome.ui \
+    mainwindow.ui

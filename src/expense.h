@@ -6,7 +6,7 @@
 class Expense : public Transaction
 {
 public:
-    Expense(const QDate &date, const QString &category, const Money &price, const QString &comment, const QString &goods);
+    Expense(const QDate &date, const Money &price, const QString &comment, const QString &goods);
     Expense(Expense &otherExp);
     Expense();
     ~Expense();

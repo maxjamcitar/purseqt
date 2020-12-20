@@ -222,7 +222,7 @@ void Purse::on_pushButton_7_clicked()
     Manager *test;
     test=new Manager;
     test->read(fileName);
-    categ = ui->comboBox_3->currentText().toStdString();
+    categ = ui->comboBox_3->currentText();
     if (categ == "DATE")
         field = DATE;
     if (categ == "NEED")

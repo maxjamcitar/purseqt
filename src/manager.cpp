@@ -98,16 +98,17 @@ void Manager::readFile(QString fileName){
             stream >> classType;
             if (classType == QString("Income"))
             {
-                Income incInst;
-                incInst.fromStreamRaw(stream);
-                QSharedPointer<Transaction> transInst = QSharedPointer<Transaction>(new Transaction, incInst);
+                qDebug() << "im about to head out";
+                QSharedPointer<Income> incPtr = QSharedPointer<Income>(new Income);
+                incPtr->fromStreamRaw(stream);
+                QSharedPointer<Transaction> transInst = incPtr.dynamicCast<Transaction>();
                 addEnd(transInst);
             }
             else if (classType == QString("Expense"))
             {
-                Expense expInst;
-                expInst.fromStreamRaw(stream);
-                QSharedPointer<Transaction> transInst = QSharedPointer<Transaction>(new Transaction, expInst);
+                QSharedPointer<Expense> expPtr = QSharedPointer<Expense>(new Expense);
+                expPtr->fromStreamRaw(stream);
+                QSharedPointer<Transaction> transInst = expPtr.dynamicCast<Transaction>();
                 addEnd(transInst);
             }
             else
@@ -153,24 +154,52 @@ QString Manager::show() const
 
 bool Manager::compareTwo(const Transaction& left, const Transaction& right, ParameterType field) const
 {
+    bool result;
+    QString leftCateg, rightCateg;
     switch (field)
     {
-
     case ParameterType::PRICE:
-        return (left.getPrice() > right.getPrice()) ? true : false;
+        result = (left.getPrice() > right.getPrice()) ? true : false;
         break;
 
     case ParameterType::CATEGORY:
-        return (left.getCategory() > right.getCategory()) ? true : false;
+        if (left.getClassType() == QString("Income"))
+        {
+            QSharedPointer<Income> leftInc = QSharedPointer<Income>(new Income, &left);
+            leftCateg = leftInc->getSource();
+        }
+        else if (left.getClassType() == QString("Expense"))
+        {
+            QSharedPointer<Expense> leftExp = QSharedPointer<Expense>(new Expense, &left);
+            leftCateg = leftExp->getGoods();
+        }
+        else
+            leftCateg = QString("NaN");
+
+        if (right.getClassType() == QString("Income"))
+        {
+            QSharedPointer<Income> rightInc = QSharedPointer<Income>(new Income, &right);
+            rightCateg = rightInc->getSource();
+        }
+        else if (right.getClassType() == QString("Expense"))
+        {
+            QSharedPointer<Expense> rightExp = QSharedPointer<Expense>(new Expense, &right);
+            rightCateg = rightExp->getGoods();
+        }
+        else
+            rightCateg = QString("NaN");
+
+        result = (leftCateg > rightCateg) ? true : false;
         break;
 
     default:
         qDebug() << QString("Unknown parameter. Sorting by date");
 
     case ParameterType::DATE:
-        return (left.getDate() > right.getDate()) ? true : false;
+        result = (left.getDate() > right.getDate()) ? true : false;
         break;
     }
+    return result;
 }
 
 void Manager::sort(ParameterType field, bool isAscending)

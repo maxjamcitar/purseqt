@@ -10,16 +10,14 @@
 class Transaction
 {
 public:
-    enum Parameter {DATE, PRICE, CATEGORY, COMMENT};
+    //enum Parameter {DATE, PRICE, COMMENT};
 
-    ~Transaction();
+    virtual ~Transaction();
     virtual QString getClassType () const;  // expense, income or elsewhat
     void setDate (const QDate &otherDate);
     QDate getDate () const;
     void setPrice (const Money &otherPrice);
     Money getPrice () const;
-    void setCategory(const QString &otherCategory);
-    QString getCategory() const;
     void setComment(const QString &otherComment);
     QString getComment() const;
 
@@ -27,11 +25,11 @@ public:
     virtual QDataStream& toStreamRaw(QDataStream &out) const;
     //virtual Transaction fromStreamRaw(QDataStream &out) const;
 
-    static QSet<QString> categoryList;  // todo save category list
+    //static QSet<QString> categoryList;  // todo save category list
 
     friend class Manager;   // so Manager can store abstract Transactions instead of Expenses or Incomes
 protected:
-    Transaction(const QDate &date, const QString &category, const Money &price, const QString comment);
+    Transaction(const QDate &date, const Money &price, const QString comment);
     Transaction(const Transaction &otherTr);
     Transaction();
     void setClassType (const QString &otherClassType);
@@ -39,7 +37,6 @@ protected:
     QDate date;
     QString classType;
     Money price;
-    QString category;
     QString comment;
 };
 

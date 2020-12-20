@@ -5,18 +5,15 @@ Income::Income()
 {
     Transaction::setClassType("Income");
     this->date = QDate(0000, 00, 00);
-    this->category = QString("OTHER");
-    categoryList.insert("OTHER");
     this->price = Money(0.0, CurrConversion::activeCurrency);
     this->source = QString("");
 }
 
-Income::Income(const QDate &date, const QString &category, const Money &price, const QString &comment, const QString &source)
-    : Transaction(date, category, price, comment)
+Income::Income(const QDate &date, const Money &price, const QString &comment, const QString &source)
+    : Transaction(date, price, comment)
 {
     Transaction::setClassType("Income");
     this->date = date;
-    this->category = category;
     this->setPrice(price);
     this->comment = comment;
     this->source = source;
@@ -27,7 +24,6 @@ Income::Income(Income &otherInc)
 {
     Transaction::setClassType("Income");
     this->date = otherInc.date;
-    this->category = otherInc.category;
     this->price = otherInc.price;
     this->source = otherInc.source;
 }
@@ -53,15 +49,14 @@ QString Income::toString() const
     int year, month, day;
     this->date.getDate(&year, &month, &day);
     QString strDate = QStringLiteral("%1.%2.%3").arg(year).arg(month).arg(day);
-    return QStringLiteral("Date: %1 | Category: %2 | Price: %3 | Source: %4 | Comment: %5")
-            .arg(strDate).arg(this->getCategory()).arg(this->price.to_str()).arg(this->source).arg(this->comment);
+    return QStringLiteral("Date: %1 | Price: %2 | Source: %3 | Comment: %4")
+            .arg(strDate).arg(this->price.to_str()).arg(this->source).arg(this->comment);
 }
 
 QDataStream& Income::toStreamRaw(QDataStream &out) const
 {
     out << this->classType
            << this->date
-           << this->category
            << this->price.getValue() << this->price.getCurrency()
            << this->source
            << this->comment;
@@ -76,7 +71,6 @@ Income Income::fromStreamRaw(QDataStream &out) const
     out
            //>> ret.classType
            >> ret.date
-           >> ret.category
            >> priceValue >> priceStr
            >> ret.source
            >> ret.comment;

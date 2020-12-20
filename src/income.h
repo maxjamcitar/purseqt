@@ -6,7 +6,7 @@
 class Income : public Transaction
 {
 public:
-    Income(const QDate &date, const QString &category, const Money &price, const QString &comment, const QString &source);
+    Income(const QDate &date, const Money &price, const QString &comment, const QString &source);
     Income(Income &otherInc);
     Income();
     ~Income();
