@@ -10,6 +10,7 @@ AddExpense::AddExpense(QWidget *parent) :
     InitializeCurrencyComboBox();
     ui->dateEdit->setDate(QDate::currentDate());
 
+    ui->dateEdit->setMaximumDate(QDate::currentDate());
     ui->lineEditMoneyValue->setValidator( new QDoubleValidator(0.0, std::numeric_limits<float>::max(), 2, this));
 
     date = QDate::currentDate();

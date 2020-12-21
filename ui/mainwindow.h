@@ -23,10 +23,16 @@ private slots:
 
     void on_buttonAddExpense_clicked();
 
+    void on_comboBoxActiveCurrency_currentTextChanged(const QString &arg1);
+
 private:
+    void InitializeActCurrencyComboBox();
+    void showMngrInTable(const Manager& argMngr);
+
+
     Ui::MainWindow *ui;
 
-    Manager mngr;
+    Manager mainMngr;   // for all transaction data
     //CurrConversion currConversion;
 };
 

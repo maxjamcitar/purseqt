@@ -2,6 +2,7 @@
 #include <QErrorMessage>
 #include <QSet>
 #include <QMap>
+#include <QDebug>
 
 // static variables
 QSet<QString> CurrConversion::currencyList = QSet<QString>();
@@ -96,15 +97,18 @@ Money::Money(float otherValue)
 
 Money::Money(const float otherValue, const QString& otherCurr)
 {
-    float coefOther = CurrConversion::getCoef(otherCurr);
-    float coefThis = CurrConversion::getCoef(currency);
-    value = otherValue * (coefThis / coefOther);
+    value = otherValue;
     currency = otherCurr;
 }
 
 Money::Money(const Money &otherMoney)
 {
-    Money(otherMoney.getValue(), otherMoney.getCurrency());
+    if (this != &otherMoney)
+    {
+        this->value = otherMoney.getValue();
+        this->currency = otherMoney.getCurrency();
+    }
+
 }
 
 float Money::getValue() const
@@ -135,10 +139,11 @@ void Money::convertTo (const QString &otherCurr)
 
 void Money::operator= (const Money &otherMoney)
 {
-    Money otherCopy (otherMoney);
-    otherCopy.convertTo(this->currency);
-    this->value = otherCopy.getValue();
-    this->currency = otherCopy.getCurrency();
+    if (this != &otherMoney)
+    {
+        this->value = otherMoney.getValue();
+        this->currency = otherMoney.getCurrency();
+    }
 }
 
 bool Money::operator> (const Money &otherMoney) const

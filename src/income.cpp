@@ -9,23 +9,26 @@ Income::Income()
     this->source = QString("");
 }
 
-Income::Income(const QDate &date, const Money &price, const QString &comment, const QString &source)
-    : Transaction(date, price, comment)
+Income::Income(const QDate &otherDate, const Money &otherPrice, const QString &otherComment, const QString &otherSource)
+    : Transaction(otherDate, otherPrice, otherComment)
 {
     this->setClassType("Income");
-    this->date = date;
-    this->setPrice(price);
-    this->comment = comment;
-    this->source = source;
+    this->date = otherDate;
+    this->price = otherPrice;
+    this->comment = otherComment;
+    this->source = otherSource;
 }
 
 Income::Income(Income &otherInc)
     : Transaction(otherInc)
 {
-    this->setClassType("Income");
-    this->date = otherInc.date;
-    this->price = otherInc.price;
-    this->source = otherInc.source;
+    if (this != &otherInc)
+    {
+        this->setClassType("Income");
+        this->date = otherInc.date;
+        this->price = otherInc.price;
+        this->source = otherInc.source;
+    }
 }
 
 Income::~Income()

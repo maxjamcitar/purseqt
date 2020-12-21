@@ -17,7 +17,7 @@
    <widget class="QTableWidget" name="tableTransactions">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>20</x>
       <y>50</y>
       <width>781</width>
       <height>451</height>
@@ -33,7 +33,7 @@
     </column>
     <column>
      <property name="text">
-      <string>New Column</string>
+      <string>Date</string>
      </property>
     </column>
     <column>
@@ -55,10 +55,10 @@
    <widget class="QPushButton" name="buttonAddIncome">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>20</x>
       <y>10</y>
-      <width>101</width>
-      <height>31</height>
+      <width>100</width>
+      <height>30</height>
      </rect>
     </property>
     <property name="text">
@@ -68,14 +68,50 @@
    <widget class="QPushButton" name="buttonAddExpense">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>140</x>
       <y>10</y>
-      <width>101</width>
-      <height>31</height>
+      <width>100</width>
+      <height>30</height>
      </rect>
     </property>
     <property name="text">
      <string>Add expense...</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxActiveCurrency">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>15</y>
+      <width>70</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelActiveCurrency">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>15</y>
+      <width>90</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Default currency:</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonConvertMngr">
+    <property name="geometry">
+     <rect>
+      <x>725</x>
+      <y>10</y>
+      <width>75</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Convert all</string>
     </property>
    </widget>
   </widget>

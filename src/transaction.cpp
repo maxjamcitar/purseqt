@@ -8,20 +8,23 @@ Transaction::Transaction()
     Transaction::setComment(QString(""));
 }
 
-Transaction::Transaction(const QDate &date, const Money &price, const QString comment)
+Transaction::Transaction(const QDate &otherDate, const Money &otherPrice, const QString otherComment)
 {
     this->setClassType("Transaction");
-    this->date = date;
-    this->setPrice(price);
-    this->comment = comment;
+    this->date = otherDate;
+    this->price = otherPrice;
+    this->comment = otherComment;
 }
 
 Transaction::Transaction(const Transaction &otherTr)
 {
-    this->setClassType("Transaction");
-    this->date = otherTr.date;
-    this->price = otherTr.price;
-    this->comment = otherTr.comment;
+    if (this != &otherTr)
+    {
+        this->setClassType("Transaction");
+        this->date = otherTr.date;
+        this->price = otherTr.price;
+        this->comment = otherTr.comment;
+    }
 }
 
 Transaction::~Transaction()

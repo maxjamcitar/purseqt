@@ -1,17 +1,17 @@
 #include "src/manager.h"
-#include <string>
-#include <sstream>
-#include <iostream>
 #include <QErrorMessage>
 
 Manager::Manager()
 {
-    dqueue = std::list<QSharedPointer<Transaction>>();
+    dqueue = QVector<QSharedPointer<Transaction>>();
 }
 
 Manager::Manager(Manager &otherManager)
 {
-    dqueue = otherManager.getList();
+    if (this != &otherManager)
+    {
+        dqueue = otherManager.getVector();
+    }
 }
 
 Manager::~Manager()
@@ -19,7 +19,7 @@ Manager::~Manager()
     dqueue.clear();
 }
 
-std::list<QSharedPointer<Transaction>> Manager::getList() const
+QVector<QSharedPointer<Transaction>> Manager::getVector() const
 {
     return dqueue;
 }
@@ -29,7 +29,7 @@ bool Manager::isEmpty()
     return !(Manager::getSize());
 }
 
-std::size_t Manager::getSize()
+qsizetype Manager::getSize()
 {
     return dqueue.size();
 }
@@ -44,22 +44,34 @@ void Manager::addEnd(QSharedPointer<Transaction> tran)
     dqueue.push_back(tran);
 }
 
-void Manager::delBegin(){
+void Manager::addAfter(QSharedPointer<Transaction> tran, const int i)
+{
+    dqueue.insert(i+1, tran);
+}
+
+void Manager::delBegin()
+{
     if (dqueue.size() != 0)
     {
         dqueue.pop_front();
     }
     else
-        qDebug() << "Failed to remove first element of std::list " << &(this->dqueue) << "as it is already empty.";
+        qDebug() << "Failed to remove first element of vector " << &(this->dqueue) << "as it is already empty.";
 }
 
-void Manager::delEnd(){
+void Manager::delEnd()
+{
     if (dqueue.size() != 0)
     {
         dqueue.pop_back();
     }
     else
-        qDebug() << "Failed to remove last element of std::list " << &(this->dqueue) << "as it is already empty.";
+        qDebug() << "Failed to remove last element of vector " << &(this->dqueue) << "as it is already empty.";
+}
+
+void Manager::delAt(const int i)
+{
+    dqueue.remove(i);
 }
 
 QSharedPointer<Transaction> Manager::getBegin(){
@@ -68,6 +80,16 @@ QSharedPointer<Transaction> Manager::getBegin(){
 
 QSharedPointer<Transaction> Manager::getEnd(){
     return dqueue.back();
+}
+
+QSharedPointer<Transaction> Manager::getAt(const int i)
+{
+    return dqueue.at(i);
+}
+
+qsizetype Manager::getIndex(QSharedPointer<Transaction> tran)
+{
+    return dqueue.indexOf(tran);
 }
 
 void Manager::setBegin(QSharedPointer<Transaction> tran)

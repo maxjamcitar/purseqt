@@ -6,7 +6,7 @@
 #include <QFile>
 #include <QDataStream>
 #include <QDebug>
-#include <list>
+#include <QVector>
 
 class Manager
 {
@@ -17,23 +17,29 @@ public:
     Manager(Manager &otherManager);
     ~Manager();
 
-    std::list<QSharedPointer<Transaction>> getList() const;
+    QVector<QSharedPointer<Transaction>> getVector() const;
 
     bool isEmpty();
 
-    std::size_t getSize();
+    qsizetype getSize();
 
     void addBegin(QSharedPointer<Transaction> tran);
     void addEnd(QSharedPointer<Transaction> tran);
+    void addAfter(QSharedPointer<Transaction> tran, const int i);
 
     void delBegin();
     void delEnd();
+    void delAt(const int i);
 
     QSharedPointer<Transaction> getBegin();
     QSharedPointer<Transaction> getEnd();
+    QSharedPointer<Transaction> getAt(const int i);
+
+    qsizetype getIndex(QSharedPointer<Transaction> tran);
 
     void setBegin(QSharedPointer<Transaction> tran);
     void setEnd(QSharedPointer<Transaction> tran);
+    void setAt(QSharedPointer<Transaction> tran);
 
     void readFile(QString fileName);
     void writeFile(QString fileName);
@@ -47,7 +53,7 @@ public:
     Money residual ();
 
 private:
-    std::list<QSharedPointer<Transaction>> dqueue;  // std::list because there is no such Qt container
+    QVector<QSharedPointer<Transaction>> dqueue;
 };
 
 #endif // MANAGER_H

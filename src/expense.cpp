@@ -19,13 +19,16 @@ Expense::Expense(const QDate &date, const Money &price, const QString &comment, 
     this->goods = goods;
 }
 
-Expense::Expense(Expense &otherTr)
-    : Transaction(otherTr)
+Expense::Expense(Expense &otherExp)
+    : Transaction(otherExp)
 {
-    this->setClassType("Expense");
-    this->date = otherTr.date;
-    this->price = otherTr.price;
-    this->goods = otherTr.goods;
+    if (this != &otherExp)
+    {
+        this->setClassType("Expense");
+        this->date = otherExp.date;
+        this->price = otherExp.price;
+        this->goods = otherExp.goods;
+    }
 }
 
 Expense::~Expense()
