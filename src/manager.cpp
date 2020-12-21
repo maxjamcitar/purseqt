@@ -107,56 +107,72 @@ void Manager::setEnd(QSharedPointer<Transaction> tran){
     }
 }
 
-void Manager::readFile(QString fileName){
+bool Manager::readFile(QString fileName){
     QFile file(fileName);
     if (file.exists())
     {
         QDataStream stream(&file);
-        file.open(QIODevice::ReadOnly);
-        dqueue.clear();
-        QString classType;
-        while(!file.atEnd())
+        if (file.open(QIODevice::ReadOnly))
         {
-            stream >> classType;
-            if (classType == QString("Income"))
+            dqueue.clear();
+            QString classType;
+            while(!file.atEnd())
             {
-                QSharedPointer<Income> incPtr = QSharedPointer<Income>(new Income);
-                incPtr->fromStreamRaw(stream);
-                QSharedPointer<Transaction> transInst = qSharedPointerDynamicCast<Transaction>(incPtr);
-                addEnd(transInst);
+                stream >> classType;
+                if (classType == QString("Income"))
+                {
+                    QSharedPointer<Income> incPtr = QSharedPointer<Income>(new Income);
+                    incPtr->fromStreamRaw(stream);
+                    QSharedPointer<Transaction> transInst = qSharedPointerDynamicCast<Transaction>(incPtr);
+                    addEnd(transInst);
+                }
+                else if (classType == QString("Expense"))
+                {
+                    QSharedPointer<Expense> expPtr = QSharedPointer<Expense>(new Expense);
+                    expPtr->fromStreamRaw(stream);
+                    QSharedPointer<Transaction> transInst = qSharedPointerDynamicCast<Transaction>(expPtr);
+                    addEnd(transInst);
+                }
+                else
+                {
+                    qDebug() << "Failed to parse a transaction (corrupted or unknown type " + classType + ")";
+                }
             }
-            else if (classType == QString("Expense"))
-            {
-                QSharedPointer<Expense> expPtr = QSharedPointer<Expense>(new Expense);
-                expPtr->fromStreamRaw(stream);
-                QSharedPointer<Transaction> transInst = qSharedPointerDynamicCast<Transaction>(expPtr);
-                addEnd(transInst);
-            }
-            else
-            {
-                QErrorMessage err;
-                err.showMessage(QString("Failed to parse a transaction (corrupted or unknown type " + classType + ")"));
-            }
+            file.close();
+            return true;
         }
-        file.close();
+        else
+        {
+            QMessageBox::critical(nullptr, "Can't open file", "File " + fileName + " cannot be opened for read.");
+            return false;
+        }
     }
     else
     {
-        QErrorMessage err;
-        err.showMessage(QString("File " + fileName + "cannot be opened."));
+        QMessageBox::critical(nullptr, "File does not exist", "File " + fileName + " does not exist.");
+        return false;
     }
 }
 
-void Manager::writeFile(QString fileName)
+bool Manager::writeFile(QString fileName)
 {
     QFile file(fileName);
     QDataStream stream(&file);
-    file.open(QIODevice::WriteOnly);
-    for (auto iter = dqueue.begin(); iter != dqueue.end(); ++iter)
+    if (file.open(QIODevice::WriteOnly))
     {
-        (*iter)->toStreamRaw(stream);
+        for (auto iter = dqueue.begin(); iter != dqueue.end(); ++iter)
+        {
+            (*iter)->toStreamRaw(stream);
+        }
+        file.close();
+        return true;
     }
-    file.close();
+    else
+    {
+        QMessageBox::critical(nullptr, "Can't open file", "File " + fileName + "cannot be opened for write.");
+        return false;
+    }
+
 }
 
 QString Manager::show() const

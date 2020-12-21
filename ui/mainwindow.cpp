@@ -84,7 +84,6 @@ void MainWindow::showMngrInTable(const Manager& argMngr)
             ui->tableTransactions->setItem(i,3,twGoods);
         }
     }
-    qDebug() << argMngr.residual().to_str(" ");
 }
 
 void MainWindow::on_buttonAddIncome_clicked()

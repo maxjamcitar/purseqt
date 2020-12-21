@@ -41,8 +41,8 @@ public:
     void setEnd(QSharedPointer<Transaction> tran);
     void setAt(QSharedPointer<Transaction> tran);
 
-    void readFile(QString fileName);
-    void writeFile(QString fileName);
+    bool readFile(QString fileName);
+    bool writeFile(QString fileName);
 
     bool compareTwo(const QSharedPointer<Transaction> left, const QSharedPointer<Transaction> right, ParameterType field) const;
     void sort(ParameterType field, bool isAscending);
