@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>240</width>
-    <height>180</height>
+    <width>250</width>
+    <height>220</height>
    </rect>
   </property>
   <property name="cursor">
@@ -25,8 +25,8 @@
   <widget class="QDialogButtonBox" name="buttonsOkCancel">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>140</y>
+     <x>70</x>
+     <y>180</y>
      <width>161</width>
      <height>31</height>
     </rect>
@@ -44,9 +44,9 @@
   <widget class="QDateEdit" name="dateEdit">
    <property name="geometry">
     <rect>
-     <x>60</x>
+     <x>70</x>
      <y>20</y>
-     <width>81</width>
+     <width>91</width>
      <height>20</height>
     </rect>
    </property>
@@ -93,7 +93,7 @@
   <widget class="QLineEdit" name="lineEditMoneyValue">
    <property name="geometry">
     <rect>
-     <x>60</x>
+     <x>70</x>
      <y>60</y>
      <width>90</width>
      <height>20</height>
@@ -103,10 +103,10 @@
   <widget class="QComboBox" name="comboBoxCurrency">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>180</x>
      <y>60</y>
      <width>51</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>
@@ -126,11 +126,34 @@
   <widget class="QLineEdit" name="lineEditSource">
    <property name="geometry">
     <rect>
-     <x>80</x>
+     <x>79</x>
      <y>100</y>
+     <width>151</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditComment">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>140</y>
      <width>140</width>
      <height>20</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelComment">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>140</y>
+     <width>60</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Comment:</string>
    </property>
   </widget>
  </widget>

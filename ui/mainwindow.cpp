@@ -10,8 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     // currency initialization
-    CurrConversion::addCurrency("RUB", 73.68);  // todo import coef from elsewhere
     CurrConversion::addCurrency("EUR", 1.22);  // todo import coef from elsewhere
+    CurrConversion::addCurrency("RUB", 73.68);  // todo import coef from elsewhere
     CurrConversion::addCurrency("GBP", 1.62);  // todo import coef from elsewhere
     CurrConversion::changeActiveCurrency("RUB");
 }
@@ -35,6 +35,6 @@ void MainWindow::on_buttonAddExpense_clicked()
     AddExpense addExpenseDialog;
     if (addExpenseDialog.exec() == QDialog::Accepted)
     {
-        qDebug() << QString("exp todo getters from dialog");
+        qDebug() << addExpenseDialog.getComment();
     }
 }
