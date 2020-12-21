@@ -51,8 +51,7 @@ float CurrConversion::getCoef (const QString& currName)
     auto currIter = currencyMap.find(currName);
     if (currIter == currencyMap.end())
     {
-        QErrorMessage err;
-        err.showMessage(QString("Failed to find the conversion coefficient for currency " + currName + "."));
+        QMessageBox::critical(nullptr, "Currency conversion failure", "ERROR! Failed to find the conversion coefficient for currency " + currName + ".");
         return 0;
     }
     return currIter.value();
@@ -68,8 +67,7 @@ void CurrConversion::changeActiveCurrency (const QString& otherCurr)
 {
     if (!isCurrSaved(otherCurr))
     {
-        QErrorMessage err;
-        err.showMessage(QString("Failed to change active currency (currency " + otherCurr + " not found)."));
+        QMessageBox::critical(nullptr, "Currency changing failure", "Failed to change active currency (currency " + otherCurr + " not found).");
     }
     else
         activeCurrency = otherCurr;
@@ -126,14 +124,19 @@ QString Money::getCurrency() const
     return currency;
 }
 
-void Money::convertTo (const QString &otherCurr)
+bool Money::convertTo (const QString &otherCurr)
 {
     float coefOther = CurrConversion::getCoef(otherCurr);
     float coefThis = CurrConversion::getCoef(currency);
     if (coefOther != 0 && coefThis != 0)
     {
-        value *= coefThis / coefOther;
+        value *= coefOther / coefThis;
         currency = otherCurr;
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
@@ -175,8 +178,10 @@ Money Money::operator+ (const Money &otherMoney) const
 void Money::operator+= (const Money &otherMoney)
 {
     Money result = *this + otherMoney;
-    result.convertTo(this->currency);
-    this->value = result.getValue();
+    if (result.convertTo(this->currency))
+    {
+        this->value = result.getValue();
+    }
 }
 
 Money Money::operator- (const Money &otherMoney) const
@@ -194,7 +199,6 @@ void Money::operator-= (const Money &otherMoney)
     result.convertTo(this->currency);
     this->value = result.getValue();
 }
-
 
 QString Money::to_str (QString sep) const
 {

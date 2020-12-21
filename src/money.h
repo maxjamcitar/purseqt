@@ -4,6 +4,7 @@
 #include <QString>
 #include <QSet>
 #include <QMap>
+#include <QMessageBox>
 
 class CurrConversion
 {
@@ -35,7 +36,7 @@ public:
     float getValue() const;
     void setValue (float otherValue);
     QString getCurrency() const;
-    void convertTo (const QString &otherCurr);
+    bool convertTo (const QString &otherCurr);
     void operator= (const Money &otherMoney);
     bool operator> (const Money &otherMoney) const;
     bool operator< (const Money &otherMoney) const;

@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     // currency initialization
+    CurrConversion::addCurrency("USD", 1);
     CurrConversion::addCurrency("EUR", 1.22);  // todo import coef from elsewhere
     CurrConversion::addCurrency("RUB", 73.68);  // todo import coef from elsewhere
     CurrConversion::addCurrency("GBP", 1.62);  // todo import coef from elsewhere
@@ -83,6 +84,7 @@ void MainWindow::showMngrInTable(const Manager& argMngr)
             ui->tableTransactions->setItem(i,3,twGoods);
         }
     }
+    qDebug() << argMngr.residual().to_str(" ");
 }
 
 void MainWindow::on_buttonAddIncome_clicked()

@@ -218,7 +218,7 @@ bool Manager::compareTwo(const QSharedPointer<Transaction> left, const QSharedPo
         break;
 
     default:
-        qDebug() << QString("Unknown parameter. Sorting cancelled");
+        QMessageBox::critical(nullptr, "Sorting failed", "Unknown sorting parameter. Sorting cancelled");
     }
     return result;
 }
@@ -255,7 +255,7 @@ void Manager::sort(ParameterType field, bool isAscending)
 }
 
 
-Money Manager::accounting()
+Money Manager::accounting() const
 {
     Money res;
     if(dqueue.size())
@@ -270,7 +270,7 @@ Money Manager::accounting()
     return res;
 }
 
-Money Manager::accountingExps()
+Money Manager::accountingExps() const
 {
     Money res;
     if(dqueue.size())
@@ -288,7 +288,7 @@ Money Manager::accountingExps()
     return res;
 }
 
-Money Manager::accountingIncs()
+Money Manager::accountingIncs() const
 {
     Money res;
     if(dqueue.size())
@@ -306,7 +306,7 @@ Money Manager::accountingIncs()
     return res;
 }
 
-Money Manager::residual()
+Money Manager::residual() const
 {
     Money res;
     if(dqueue.size())

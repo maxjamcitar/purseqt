@@ -47,10 +47,10 @@ public:
     bool compareTwo(const QSharedPointer<Transaction> left, const QSharedPointer<Transaction> right, ParameterType field) const;
     void sort(ParameterType field, bool isAscending);
     QString show() const;
-    Money accounting ();
-    Money accountingExps ();
-    Money accountingIncs ();
-    Money residual ();
+    Money accounting () const;
+    Money accountingExps () const;
+    Money accountingIncs () const;
+    Money residual () const;
 
 private:
     QVector<QSharedPointer<Transaction>> dqueue;
