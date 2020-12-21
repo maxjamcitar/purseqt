@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTableWidget>
 
 #include "src/manager.h"
 #include "src/money.h"
@@ -25,14 +26,18 @@ private slots:
 
     void on_comboBoxActiveCurrency_currentTextChanged(const QString &arg1);
 
+    void on_tableTransactions_customContextMenuRequested(const QPoint &pos);
+    void removeTransaction();
+
 private:
     void InitializeActCurrencyComboBox();
     void showMngrInTable(const Manager& argMngr);
 
-
     Ui::MainWindow *ui;
 
     Manager mainMngr;   // for all transaction data
+
+    int selectedTableRow;
     //CurrConversion currConversion;
 };
 

@@ -17,6 +17,12 @@ MainWindow::MainWindow(QWidget *parent) :
     CurrConversion::changeActiveCurrency("RUB");
 
     InitializeActCurrencyComboBox();
+    ui->buttonDeleteTransaction->setEnabled(false);
+    ui->tableTransactions->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableTransactions->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableTransactions->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    selectedTableRow = -1;
 }
 
 MainWindow::~MainWindow()
@@ -32,6 +38,13 @@ void MainWindow::InitializeActCurrencyComboBox()
         if (*iter != CurrConversion::activeCurrency)
             ui->comboBoxActiveCurrency->addItem(*iter);
     }
+}
+
+void MainWindow::removeTransaction()
+{
+    int index = ui->tableTransactions->currentRow();
+    mainMngr.delAt(index);
+    showMngrInTable(mainMngr);
 }
 
 void MainWindow::showMngrInTable(const Manager& argMngr)
@@ -123,4 +136,13 @@ void MainWindow::on_buttonAddExpense_clicked()
 void MainWindow::on_comboBoxActiveCurrency_currentTextChanged(const QString &arg1)
 {
     CurrConversion::changeActiveCurrency(arg1);
+}
+
+void MainWindow::on_tableTransactions_customContextMenuRequested(const QPoint &pos)
+{
+    QMenu contextMenu(tr("Context menu"), this);
+    QAction deleteItemAction = QAction(tr("Delete item"), this);
+    connect(&deleteItemAction, SIGNAL(triggered()), this, SLOT(removeTransaction()));
+    contextMenu.addAction(&deleteItemAction);
+    contextMenu.exec(ui->tableTransactions->mapToGlobal(pos));
 }
