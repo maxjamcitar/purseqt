@@ -7,6 +7,7 @@ EditExpense::EditExpense(QWidget *parent, QSharedPointer<Expense>* otherExpInst)
 {
     ui->setupUi(this);
 
+    ui->dateEdit->setMaximumDate(QDate::currentDate());
     ui->lineEditMoneyValue->setValidator( new QDoubleValidator(0.0, std::numeric_limits<float>::max(), 2, this));
 
     if (otherExpInst)

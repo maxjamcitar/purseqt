@@ -7,6 +7,7 @@ EditIncome::EditIncome(QWidget *parent, QSharedPointer<Income>* otherIncInst) :
 {
     ui->setupUi(this);
 
+    ui->dateEdit->setMaximumDate(QDate::currentDate());
     ui->lineEditMoneyValue->setValidator( new QDoubleValidator(0.0, std::numeric_limits<float>::max(), 2, this));
 
     if (otherIncInst)
