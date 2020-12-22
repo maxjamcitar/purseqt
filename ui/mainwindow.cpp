@@ -13,8 +13,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    isUpdatingTable = false;
-
     // currency initialization
     CurrConversion::addCurrency("USD", 1);
     CurrConversion::addCurrency("EUR", 0.82);  // todo import coef from elsewhere
