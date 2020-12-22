@@ -85,7 +85,6 @@ void MainWindow::removeTransaction()
 
 void MainWindow::updateMngrInTable(const Manager& argMngr)
 {
-    isUpdatingTable = true;
     auto mngrVec = argMngr.getVector();
     ui->tableTransactions->clearContents();
     ui->tableTransactions->setRowCount(mngrVec.size());
@@ -134,8 +133,6 @@ void MainWindow::updateMngrInTable(const Manager& argMngr)
             ui->tableTransactions->setItem(i,TABCOLUMN(GOODSSOURCE),twGoods);
         }
     }
-
-    isUpdatingTable = false;
 
     //todo export to backup.bin
     //todo stats update, balance check

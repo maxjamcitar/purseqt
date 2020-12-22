@@ -38,7 +38,6 @@ private:
 
     Ui::MainWindow *ui;
 
-    bool isUpdatingTable;
     Manager mainMngr;   // for all transaction data
 };
 
