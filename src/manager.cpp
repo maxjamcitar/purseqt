@@ -107,6 +107,11 @@ void Manager::setEnd(QSharedPointer<Transaction> tran){
     }
 }
 
+void Manager::setAt(const int i, QSharedPointer<Transaction> tran)
+{
+    this->dqueue.replace(i, tran);
+}
+
 bool Manager::readFile(QString fileName){
     QFile file(fileName);
     if (file.exists())
@@ -200,7 +205,7 @@ bool Manager::compareTwo(const QSharedPointer<Transaction> left, const QSharedPo
         break;
 
     case ParameterType::PRICE:
-        result = (left->getPrice() > right->getPrice()) ? true : false;
+        result = (left->getMoney() > right->getMoney()) ? true : false;
         break;
 
     case ParameterType::CATEGORY:
@@ -278,7 +283,7 @@ Money Manager::accounting() const
     {
         for (auto iter = dqueue.begin(); iter != dqueue.end(); ++iter)
         {
-            res += (*iter)->getPrice();
+            res += (*iter)->getMoney();
         }
     }
     else
@@ -295,7 +300,7 @@ Money Manager::accountingExps() const
         {
             if ((*iter)->getClassType() == QString("Expense"))
             {
-                res += (*iter)->getPrice();
+                res += (*iter)->getMoney();
             }
         }
     }
@@ -313,7 +318,7 @@ Money Manager::accountingIncs() const
         {
             if ((*iter)->getClassType() == QString("Income"))
             {
-                res += (*iter)->getPrice();
+                res += (*iter)->getMoney();
             }
         }
     }
@@ -331,11 +336,11 @@ Money Manager::residual() const
         {
             if ((*iter)->getClassType() == QString("Income"))
             {
-                res += (*iter)->getPrice();
+                res += (*iter)->getMoney();
             }
             else if ((*iter)->getClassType() == QString("Expense"))
             {
-                res -= (*iter)->getPrice();
+                res -= (*iter)->getMoney();
             }
             else
                 qDebug() << "Transaction with unidentified class type in dqueue";

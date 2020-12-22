@@ -73,6 +73,24 @@ void CurrConversion::changeActiveCurrency (const QString& otherCurr)
         activeCurrency = otherCurr;
 }
 
+void CurrConversion::requestRatesHttp ()
+{
+    QNetworkAccessManager* manager = new QNetworkAccessManager();
+    auto status = connect(manager, SIGNAL(finished(QNetworkReply*)),
+                          this, SLOT(replyFinished(QNetworkReply*)));
+    manager->get(QNetworkRequest(QUrl("https://www.google.com")));
+
+    //QByteArray data=reply->readAll();
+    //qDebug() << data.data();
+
+}
+
+void CurrConversion::replyFinished(QNetworkReply *reply)
+{
+     QString answer = QString::fromUtf8(reply->readAll());
+     qDebug () << answer;
+}
+
 
 //------------------------------------------------------------------------------------------------------------
 
@@ -124,6 +142,11 @@ QString Money::getCurrency() const
     return currency;
 }
 
+void Money::setCurrency(const QString& otherCurrency)
+{
+    currency = otherCurrency;
+}
+
 bool Money::convertTo (const QString &otherCurr)
 {
     float coefOther = CurrConversion::getCoef(otherCurr);
@@ -131,6 +154,7 @@ bool Money::convertTo (const QString &otherCurr)
     if (coefOther != 0 && coefThis != 0)
     {
         value *= coefOther / coefThis;
+        value = round( value * 100.0 ) / 100.0; // rounding to 2 decimals
         currency = otherCurr;
         return true;
     }
@@ -153,7 +177,13 @@ bool Money::operator> (const Money &otherMoney) const
 {
     float coefOther = CurrConversion::getCoef(otherMoney.getCurrency());
     float coefThis = CurrConversion::getCoef(currency);
-    return (this->value / coefThis) > (otherMoney.getValue() / coefOther);  // comparing USDs
+
+    float valueThisConverted = this->value / coefThis;
+    valueThisConverted = round( valueThisConverted * 100.0 ) / 100.0; // rounding to 2 decimals
+    float valueOtherConverted = otherMoney.getValue() / coefOther;
+    valueOtherConverted = round( valueOtherConverted * 100.0 ) / 100.0; // rounding to 2 decimals
+
+    return (valueThisConverted > valueOtherConverted);  // comparing USDs
 }
 
 bool Money::operator< (const Money &otherMoney) const
@@ -170,7 +200,12 @@ Money Money::operator+ (const Money &otherMoney) const
 {
     float coefOther = CurrConversion::getCoef(otherMoney.getCurrency());
     float coefThis = CurrConversion::getCoef(currency);
-    Money result((this->value / coefThis) + (otherMoney.getValue() / coefOther), "USD");
+    float valueThisConverted = this->value / coefThis;
+    valueThisConverted = round( valueThisConverted * 100.0 ) / 100.0; // rounding to 2 decimals
+    float valueOtherConverted = otherMoney.getValue() / coefOther;
+    valueOtherConverted = round( valueOtherConverted * 100.0 ) / 100.0; // rounding to 2 decimals
+
+    Money result(valueThisConverted + valueOtherConverted, "USD");
     result.convertTo(CurrConversion::activeCurrency);
     return result;  // comparing USDs
 }
@@ -188,7 +223,12 @@ Money Money::operator- (const Money &otherMoney) const
 {
     float coefOther = CurrConversion::getCoef(otherMoney.getCurrency());
     float coefThis = CurrConversion::getCoef(currency);
-    Money result((this->value / coefThis) - (otherMoney.getValue() / coefOther), "USD");
+    float valueThisConverted = this->value / coefThis;
+    valueThisConverted = round( valueThisConverted * 100.0 ) / 100.0; // rounding to 2 decimals
+    float valueOtherConverted = otherMoney.getValue() / coefOther;
+    valueOtherConverted = round( valueOtherConverted * 100.0 ) / 100.0; // rounding to 2 decimals
+
+    Money result(valueThisConverted - valueOtherConverted, "USD");
     result.convertTo(CurrConversion::activeCurrency);
     return result;  // comparing USDs
 }
@@ -202,5 +242,5 @@ void Money::operator-= (const Money &otherMoney)
 
 QString Money::to_str (QString sep) const
 {
-    return QStringLiteral("%1%2%3").arg(this->getValue()).arg(sep).arg(this->getCurrency());
+    return QStringLiteral("%1%2%3").arg( round(this->getValue() * 100.0) / 100.0 ).arg(sep).arg(this->getCurrency());
 }

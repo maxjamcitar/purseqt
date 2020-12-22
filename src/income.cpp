@@ -5,7 +5,7 @@ Income::Income()
 {
     this->setClassType("Income");
     this->date = QDate(0000, 00, 00);
-    this->price = Money(0.0, CurrConversion::activeCurrency);
+    this->money = Money(0.0, CurrConversion::activeCurrency);
     this->source = QString("");
 }
 
@@ -14,7 +14,7 @@ Income::Income(const QDate &otherDate, const Money &otherPrice, const QString &o
 {
     this->setClassType("Income");
     this->date = otherDate;
-    this->price = otherPrice;
+    this->money = otherPrice;
     this->comment = otherComment;
     this->source = otherSource;
 }
@@ -26,7 +26,7 @@ Income::Income(Income &otherInc)
     {
         this->setClassType("Income");
         this->date = otherInc.date;
-        this->price = otherInc.price;
+        this->money = otherInc.money;
         this->source = otherInc.source;
     }
 }
@@ -53,14 +53,14 @@ QString Income::toString() const
     this->date.getDate(&year, &month, &day);
     QString strDate = QStringLiteral("%1.%2.%3").arg(year).arg(month).arg(day);
     return QStringLiteral("Date: %1 | Price: %2 | Source: %3 | Comment: %4")
-            .arg(strDate).arg(this->price.to_str()).arg(this->source).arg(this->comment);
+            .arg(strDate).arg(this->money.to_str()).arg(this->source).arg(this->comment);
 }
 
 QDataStream& Income::toStreamRaw(QDataStream &out) const
 {
     out << this->classType
            << this->date
-           << this->price.getValue() << this->price.getCurrency()
+           << this->money.getValue() << this->money.getCurrency()
            << this->source
            << this->comment;
     return out;
@@ -77,7 +77,7 @@ Income Income::fromStreamRaw(QDataStream &out) const
            >> priceValue >> priceStr
            >> ret.source
            >> ret.comment;
-    ret.price.setValue(priceValue);
-    ret.price.convertTo(priceStr);
+    ret.money.setValue(priceValue);
+    ret.money.convertTo(priceStr);
     return ret;
 }

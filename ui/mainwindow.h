@@ -27,18 +27,19 @@ private slots:
     void on_comboBoxActiveCurrency_currentTextChanged(const QString &arg1);
 
     void on_tableTransactions_customContextMenuRequested(const QPoint &pos);
+    void editTransaction();
     void removeTransaction();
+
+    void on_buttonConvertMngr_clicked();
 
 private:
     void InitializeActCurrencyComboBox();
-    void showMngrInTable(const Manager& argMngr);
+    void updateMngrInTable(const Manager& argMngr);
 
     Ui::MainWindow *ui;
 
+    bool isUpdatingTable;
     Manager mainMngr;   // for all transaction data
-
-    int selectedTableRow;
-    //CurrConversion currConversion;
 };
 
 #endif // MAINWINDOW_H

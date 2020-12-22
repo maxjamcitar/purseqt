@@ -5,9 +5,15 @@
 #include <QSet>
 #include <QMap>
 #include <QMessageBox>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QObject>
+#include <QFile>
 
-class CurrConversion
+class CurrConversion : public QObject
 {
+    Q_OBJECT
 public:
     CurrConversion();
     ~CurrConversion();
@@ -18,10 +24,16 @@ public:
     static bool isCurrSaved (const QString& currName);
     static QString getActiveCurrency ();
     static void changeActiveCurrency (const QString& otherCurr);
+    void requestRatesHttp ();
     // todo import/export from/to files (or online)
     static QSet<QString> currencyList;  // currencies are named with compliance with ISO 4217
     static QString activeCurrency;
+
+private slots:
+    void replyFinished(QNetworkReply *reply);
+
 private:
+    //QNetworkReply *reply;
     static QMap<QString, float> currencyMap;   // "float" is coefficient for conversion: 1 USD -> "float" CURR
 };
 
@@ -36,6 +48,7 @@ public:
     float getValue() const;
     void setValue (float otherValue);
     QString getCurrency() const;
+    void setCurrency(const QString& otherCurrency);
     bool convertTo (const QString &otherCurr);
     void operator= (const Money &otherMoney);
     bool operator> (const Money &otherMoney) const;

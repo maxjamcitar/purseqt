@@ -16,8 +16,8 @@ public:
     virtual QString getClassType () const;  // expense, income or elsewhat
     void setDate (const QDate &otherDate);
     QDate getDate () const;
-    void setPrice (const Money &otherPrice);
-    Money getPrice () const;
+    void setMoney (const Money &otherPrice);
+    Money getMoney () const;
     void setComment(const QString &otherComment);
     QString getComment() const;
 
@@ -36,7 +36,7 @@ protected:
 protected:
     QDate date;
     QString classType;
-    Money price;
+    Money money;
     QString comment;
 };
 

@@ -2,6 +2,10 @@
 #include "ui_mainwindow.h"
 #include "ui/addincome.h"
 #include "ui/addexpense.h"
+#include "ui/editincome.h"
+#include "ui/editexpense.h"
+
+enum TABCOLUMN {CLASSTR = 0, DATE, VALUE, GOODSSOURCE, COMMENT};
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -9,20 +13,20 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    isUpdatingTable = false;
+
     // currency initialization
     CurrConversion::addCurrency("USD", 1);
-    CurrConversion::addCurrency("EUR", 1.22);  // todo import coef from elsewhere
+    CurrConversion::addCurrency("EUR", 0.82);  // todo import coef from elsewhere
     CurrConversion::addCurrency("RUB", 73.68);  // todo import coef from elsewhere
-    CurrConversion::addCurrency("GBP", 1.62);  // todo import coef from elsewhere
+    CurrConversion::addCurrency("GBP", 0.75);  // todo import coef from elsewhere
     CurrConversion::changeActiveCurrency("RUB");
+    CurrConversion().requestRatesHttp();
 
     InitializeActCurrencyComboBox();
-    ui->buttonDeleteTransaction->setEnabled(false);
     ui->tableTransactions->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableTransactions->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableTransactions->setContextMenuPolicy(Qt::CustomContextMenu);
-
-    selectedTableRow = -1;
 }
 
 MainWindow::~MainWindow()
@@ -40,15 +44,48 @@ void MainWindow::InitializeActCurrencyComboBox()
     }
 }
 
+void MainWindow::editTransaction()
+{
+    int tabRow = ui->tableTransactions->currentRow();
+    QSharedPointer<Transaction> rowTrans = mainMngr.getAt(tabRow);
+    if (rowTrans->getClassType() == "Income")
+    {
+        QSharedPointer<Income> rowInc = qSharedPointerDynamicCast<Income>(rowTrans);
+        EditIncome editIncomeDialog(this, &rowInc);
+        if (editIncomeDialog.exec() == QDialog::Accepted)
+        {
+            QSharedPointer<Income> newRowInc = QSharedPointer<Income>::create(*(editIncomeDialog.getIncome()));
+            QSharedPointer<Transaction> newTransInc = qSharedPointerDynamicCast<Transaction>(newRowInc);
+            mainMngr.setAt(tabRow, newTransInc);
+            updateMngrInTable(mainMngr);
+        }
+    }
+    else if (rowTrans->getClassType() == "Expense")
+    {
+        QSharedPointer<Expense> rowExp = qSharedPointerDynamicCast<Expense>(rowTrans);
+        EditExpense editExpenseDialog(this, &rowExp);
+        if (editExpenseDialog.exec() == QDialog::Accepted)
+        {
+            QSharedPointer<Expense> newRowExp = QSharedPointer<Expense>::create(*(editExpenseDialog.getExpense()));
+            QSharedPointer<Transaction> newTransExp = qSharedPointerDynamicCast<Transaction>(newRowExp);
+            mainMngr.setAt(tabRow, newTransExp);
+            updateMngrInTable(mainMngr);
+        }
+    }
+    else
+        qDebug() << "Failed to extract transaction from " << tabRow << " row";
+}
+
 void MainWindow::removeTransaction()
 {
     int index = ui->tableTransactions->currentRow();
     mainMngr.delAt(index);
-    showMngrInTable(mainMngr);
+    updateMngrInTable(mainMngr);
 }
 
-void MainWindow::showMngrInTable(const Manager& argMngr)
+void MainWindow::updateMngrInTable(const Manager& argMngr)
 {
+    isUpdatingTable = true;
     auto mngrVec = argMngr.getVector();
     ui->tableTransactions->clearContents();
     ui->tableTransactions->setRowCount(mngrVec.size());
@@ -60,23 +97,23 @@ void MainWindow::showMngrInTable(const Manager& argMngr)
         // adding inc/exp
         QTableWidgetItem *twClassType = new QTableWidgetItem
                 (iterTrans->getClassType());
-        ui->tableTransactions->setItem(i,0,twClassType);
+        ui->tableTransactions->setItem(i,TABCOLUMN(CLASSTR),twClassType);
 
         // adding date
         QTableWidgetItem *twDate = new QTableWidgetItem
                 (iterTrans->getDate().toString("dd/MM/yyyy"));
-        ui->tableTransactions->setItem(i,1,twDate);
+        ui->tableTransactions->setItem(i,TABCOLUMN(DATE),twDate);
 
         // adding value
-        Money transMoney (iterTrans->getPrice());
+        Money transMoney (iterTrans->getMoney());
         QTableWidgetItem *twMoney = new QTableWidgetItem
                 (transMoney.to_str(" "));
-        ui->tableTransactions->setItem(i,2,twMoney);
+        ui->tableTransactions->setItem(i,TABCOLUMN(VALUE),twMoney);
 
         // adding comment
         QTableWidgetItem *twComment = new QTableWidgetItem
                 (iterTrans->getComment());
-        ui->tableTransactions->setItem(i,4,twComment);
+        ui->tableTransactions->setItem(i,TABCOLUMN(COMMENT),twComment);
 
         if (iterTrans->getClassType() == QString("Income"))
         {
@@ -85,7 +122,7 @@ void MainWindow::showMngrInTable(const Manager& argMngr)
             // adding source
             QTableWidgetItem *twSource = new QTableWidgetItem
                     (iterInc->getSource());
-            ui->tableTransactions->setItem(i,3,twSource);
+            ui->tableTransactions->setItem(i,TABCOLUMN(GOODSSOURCE),twSource);
         }
         else if (iterTrans->getClassType() == QString("Expense"))
         {
@@ -94,9 +131,14 @@ void MainWindow::showMngrInTable(const Manager& argMngr)
             // adding goods
             QTableWidgetItem *twGoods = new QTableWidgetItem
                     (iterExp->getGoods());
-            ui->tableTransactions->setItem(i,3,twGoods);
+            ui->tableTransactions->setItem(i,TABCOLUMN(GOODSSOURCE),twGoods);
         }
     }
+
+    isUpdatingTable = false;
+
+    //todo export to backup.bin
+    //todo stats update, balance check
 }
 
 void MainWindow::on_buttonAddIncome_clicked()
@@ -112,7 +154,7 @@ void MainWindow::on_buttonAddIncome_clicked()
         QSharedPointer<Transaction> newTrans = qSharedPointerDynamicCast<Transaction>(newInc);
         mainMngr.addEnd(newInc);
 
-        showMngrInTable(mainMngr);
+        updateMngrInTable(mainMngr);
     }
 }
 
@@ -129,7 +171,7 @@ void MainWindow::on_buttonAddExpense_clicked()
         QSharedPointer<Transaction> newTrans = qSharedPointerDynamicCast<Transaction>(newInc);
         mainMngr.addEnd(newInc);
 
-        showMngrInTable(mainMngr);
+        updateMngrInTable(mainMngr);
     }
 }
 
@@ -141,8 +183,27 @@ void MainWindow::on_comboBoxActiveCurrency_currentTextChanged(const QString &arg
 void MainWindow::on_tableTransactions_customContextMenuRequested(const QPoint &pos)
 {
     QMenu contextMenu(tr("Context menu"), this);
+
+    QAction editItemAction = QAction(tr("Edit item"), this);
+    connect(&editItemAction, SIGNAL(triggered()), this, SLOT(editTransaction()));
+    contextMenu.addAction(&editItemAction);
+
     QAction deleteItemAction = QAction(tr("Delete item"), this);
     connect(&deleteItemAction, SIGNAL(triggered()), this, SLOT(removeTransaction()));
     contextMenu.addAction(&deleteItemAction);
+
     contextMenu.exec(ui->tableTransactions->mapToGlobal(pos));
 }
+
+void MainWindow::on_buttonConvertMngr_clicked()
+{
+    auto mngrVec = mainMngr.getVector();
+    for (auto iter = mngrVec.begin(); iter != mngrVec.end(); ++iter)
+    {
+        Money currentPrice = (*iter)->getMoney();
+        currentPrice.convertTo(CurrConversion::activeCurrency);
+        (*iter)->setMoney(currentPrice);
+    }
+    updateMngrInTable(mainMngr);
+}
+

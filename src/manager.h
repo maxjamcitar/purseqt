@@ -39,7 +39,7 @@ public:
 
     void setBegin(QSharedPointer<Transaction> tran);
     void setEnd(QSharedPointer<Transaction> tran);
-    void setAt(QSharedPointer<Transaction> tran);
+    void setAt(const int i, QSharedPointer<Transaction> tran);
 
     bool readFile(QString fileName);
     bool writeFile(QString fileName);

@@ -4,15 +4,15 @@ Transaction::Transaction()
 {
     this->setClassType("Transaction");
     this->date = QDate(0000, 00, 00);
-    this->price = Money(0.0, CurrConversion::activeCurrency);
+    this->money = Money(0.0, CurrConversion::activeCurrency);
     Transaction::setComment(QString(""));
 }
 
-Transaction::Transaction(const QDate &otherDate, const Money &otherPrice, const QString otherComment)
+Transaction::Transaction(const QDate &otherDate, const Money &otherMoney, const QString otherComment)
 {
     this->setClassType("Transaction");
     this->date = otherDate;
-    this->price = otherPrice;
+    this->money = otherMoney;
     this->comment = otherComment;
 }
 
@@ -22,7 +22,7 @@ Transaction::Transaction(const Transaction &otherTr)
     {
         this->setClassType("Transaction");
         this->date = otherTr.date;
-        this->price = otherTr.price;
+        this->money = otherTr.money;
         this->comment = otherTr.comment;
     }
 }
@@ -47,15 +47,15 @@ QDate Transaction::getDate () const
     return this->date;
 }
 
-void Transaction::setPrice (const Money &otherPrice)
+void Transaction::setMoney (const Money &otherMoney)
 {
-    this->price = otherPrice;
+    this->money = otherMoney;
 }
 
 
-Money Transaction::getPrice () const
+Money Transaction::getMoney () const
 {
-    return this->price;
+    return this->money;
 }
 
 void Transaction::setComment(const QString &otherComment)
@@ -74,14 +74,14 @@ QString Transaction::toString() const
     this->date.getDate(&year, &month, &day);
     QString strDate = QStringLiteral("%1.%2.%3").arg(year).arg(month).arg(day);
     return QStringLiteral("Date: %1 | Price: %2 | Comment: %3")
-            .arg(strDate).arg(this->price.to_str()).arg(this->comment);
+            .arg(strDate).arg(this->money.to_str()).arg(this->comment);
 }
 
 QDataStream& Transaction::toStreamRaw(QDataStream &out) const
 {
     out << this->classType
            << this->date
-           << this->price.getValue() << this->price.getCurrency()
+           << this->money.getValue() << this->money.getCurrency()
            << this->comment;
     return out;
 }
