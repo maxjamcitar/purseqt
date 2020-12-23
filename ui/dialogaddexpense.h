@@ -40,7 +40,7 @@ private:
     Ui::AddExpense *ui;
 
     QDate date;
-    float moneyValue;
+    double moneyValue;
     QString currency;
     QString goods;
     QString comment;

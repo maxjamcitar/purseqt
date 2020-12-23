@@ -6,7 +6,7 @@
 
 // static variables
 QSet<QString> CurrConversion::currencyList = QSet<QString>();
-QMap<QString, float> CurrConversion::currencyMap = QMap<QString, float>();
+QMap<QString, double> CurrConversion::currencyMap = QMap<QString, double>();
 QString CurrConversion::activeCurrency = QString("USD");
 
 CurrConversion::CurrConversion()
@@ -19,7 +19,7 @@ CurrConversion::~CurrConversion()
     // only smart pointers used
 }
 
-void CurrConversion::addCurrency (const QString& currName, const float coef)
+void CurrConversion::addCurrency (const QString& currName, const double coef)
 {
     currencyList.insert(currName);
     currencyMap.insert(currName, coef);
@@ -46,7 +46,7 @@ bool CurrConversion::isCurrSaved (const QString& currName)
         return true;
 }
 
-float CurrConversion::getCoef (const QString& currName)
+double CurrConversion::getCoef (const QString& currName)
 {
     auto currIter = currencyMap.find(currName);
     if (currIter == currencyMap.end())
@@ -105,13 +105,13 @@ Money::~Money()
 
 }
 
-Money::Money(float otherValue)
+Money::Money(double otherValue)
 {
     value = otherValue;
     currency = CurrConversion::activeCurrency;
 }
 
-Money::Money(const float otherValue, const QString& otherCurr)
+Money::Money(const double otherValue, const QString& otherCurr)
 {
     value = otherValue;
     currency = otherCurr;
@@ -127,12 +127,12 @@ Money::Money(const Money &otherMoney)
 
 }
 
-float Money::getValue() const
+double Money::getValue() const
 {
     return value;
 }
 
-void Money::setValue (const float otherValue)
+void Money::setValue (const double otherValue)
 {
     value = otherValue;
 }
@@ -149,12 +149,11 @@ void Money::setCurrency(const QString& otherCurrency)
 
 bool Money::convertTo (const QString &otherCurr)
 {
-    float coefOther = CurrConversion::getCoef(otherCurr);
-    float coefThis = CurrConversion::getCoef(currency);
+    double coefOther = CurrConversion::getCoef(otherCurr);
+    double coefThis = CurrConversion::getCoef(currency);
     if (coefOther != 0 && coefThis != 0)
     {
         value *= coefOther / coefThis;
-        value = round( value * 100.0 ) / 100.0; // rounding to 2 decimals
         currency = otherCurr;
         return true;
     }
@@ -175,13 +174,11 @@ void Money::operator= (const Money &otherMoney)
 
 bool Money::operator> (const Money &otherMoney) const
 {
-    float coefOther = CurrConversion::getCoef(otherMoney.getCurrency());
-    float coefThis = CurrConversion::getCoef(currency);
+    double coefOther = CurrConversion::getCoef(otherMoney.getCurrency());
+    double coefThis = CurrConversion::getCoef(currency);
 
-    float valueThisConverted = this->value / coefThis;
-    valueThisConverted = round( valueThisConverted * 100.0 ) / 100.0; // rounding to 2 decimals
-    float valueOtherConverted = otherMoney.getValue() / coefOther;
-    valueOtherConverted = round( valueOtherConverted * 100.0 ) / 100.0; // rounding to 2 decimals
+    double valueThisConverted = this->value / coefThis;
+    double valueOtherConverted = otherMoney.getValue() / coefOther;
 
     return (valueThisConverted > valueOtherConverted);  // comparing USDs
 }
@@ -198,12 +195,10 @@ bool Money::operator== (const Money &otherMoney) const
 
 Money Money::operator+ (const Money &otherMoney) const
 {
-    float coefOther = CurrConversion::getCoef(otherMoney.getCurrency());
-    float coefThis = CurrConversion::getCoef(currency);
-    float valueThisConverted = this->value / coefThis;
-    valueThisConverted = round( valueThisConverted * 100.0 ) / 100.0; // rounding to 2 decimals
-    float valueOtherConverted = otherMoney.getValue() / coefOther;
-    valueOtherConverted = round( valueOtherConverted * 100.0 ) / 100.0; // rounding to 2 decimals
+    double coefOther = CurrConversion::getCoef(otherMoney.getCurrency());
+    double coefThis = CurrConversion::getCoef(currency);
+    double valueThisConverted = this->value / coefThis;
+    double valueOtherConverted = otherMoney.getValue() / coefOther;
 
     Money result(valueThisConverted + valueOtherConverted, "USD");
     result.convertTo(CurrConversion::activeCurrency);
@@ -221,12 +216,10 @@ void Money::operator+= (const Money &otherMoney)
 
 Money Money::operator- (const Money &otherMoney) const
 {
-    float coefOther = CurrConversion::getCoef(otherMoney.getCurrency());
-    float coefThis = CurrConversion::getCoef(currency);
-    float valueThisConverted = this->value / coefThis;
-    valueThisConverted = round( valueThisConverted * 100.0 ) / 100.0; // rounding to 2 decimals
-    float valueOtherConverted = otherMoney.getValue() / coefOther;
-    valueOtherConverted = round( valueOtherConverted * 100.0 ) / 100.0; // rounding to 2 decimals
+    double coefOther = CurrConversion::getCoef(otherMoney.getCurrency());
+    double coefThis = CurrConversion::getCoef(currency);
+    double valueThisConverted = this->value / coefThis;
+    double valueOtherConverted = otherMoney.getValue() / coefOther;
 
     Money result(valueThisConverted - valueOtherConverted, "USD");
     result.convertTo(CurrConversion::activeCurrency);
@@ -242,5 +235,5 @@ void Money::operator-= (const Money &otherMoney)
 
 QString Money::to_str (QString sep) const
 {
-    return QStringLiteral("%1%2%3").arg( round(this->getValue() * 100.0) / 100.0 ).arg(sep).arg(this->getCurrency());
+    return QStringLiteral("%1%2%3").arg( QString::number(this->getValue(), 'f', 2)).arg(sep).arg(this->getCurrency());
 }

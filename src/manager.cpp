@@ -291,6 +291,46 @@ Money Manager::accounting() const
     return res;
 }
 
+Money Manager::residualDates(const QDate& date1, const QDate& date2) const
+{
+    Money res;
+    QDate dateLeft;
+    QDate dateRight;
+
+    if (date1 < date2)
+    {
+        dateLeft = date1;
+        dateRight = date2;
+    }
+    else
+    {
+        dateLeft = date2;
+        dateRight = date1;
+    }
+
+    if(dqueue.size())
+    {
+        for (auto iter = dqueue.begin(); iter != dqueue.end(); ++iter)
+        {
+            if (((*iter)->getDate() >= dateLeft) && ((*iter)->getDate() <= dateRight))
+            {
+                if ((*iter)->getClassType() == QString("Income"))
+                {
+                    res += (*iter)->getMoney();
+                }
+                else if ((*iter)->getClassType() == QString("Expense"))
+                {
+                    res -= (*iter)->getMoney();
+                }
+            }
+
+        }
+    }
+    else
+        res.setValue(-1);
+    return res;
+}
+
 Money Manager::accountingExps() const
 {
     Money res;

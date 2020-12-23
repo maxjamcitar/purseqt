@@ -11,7 +11,7 @@ DialogEditExpense::DialogEditExpense(QWidget *parent, QSharedPointer<Expense>* o
     setFixedSize( QSize(this->geometry().size()) );
 
     ui->dateEdit->setMaximumDate(QDate::currentDate());
-    ui->lineEditMoneyValue->setValidator( new QDoubleValidator(0.0, std::numeric_limits<float>::max(), 2, this));
+    ui->lineEditMoneyValue->setValidator( new QDoubleValidator(0.0, std::numeric_limits<double>::max(), 2, this));
 
     if (otherExpInst)
     {
@@ -78,7 +78,7 @@ void DialogEditExpense::on_dateEdit_userDateChanged(const QDate &date)
 void DialogEditExpense::on_lineEditMoneyValue_textChanged(const QString &arg1)
 {
     Money thisMoney = expInst->getMoney();
-    thisMoney.setValue(arg1.toFloat());
+    thisMoney.setValue(arg1.toDouble());
     expInst->setMoney(thisMoney);
 }
 

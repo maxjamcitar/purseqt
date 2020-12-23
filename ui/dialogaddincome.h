@@ -40,7 +40,7 @@ private:
     Ui::AddIncome *ui;
 
     QDate date;
-    float moneyValue;
+    double moneyValue;
     QString currency;
     QString source;
     QString comment;

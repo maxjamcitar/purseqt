@@ -68,7 +68,7 @@ QDataStream& Income::toStreamRaw(QDataStream &out) const
 Income Income::fromStreamRaw(QDataStream &out)
 {
     Income ret;
-    float priceValue;
+    double priceValue;
     QString priceStr;
     out
            //>> ret.classType   // commented because it's taken in class check

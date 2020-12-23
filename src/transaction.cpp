@@ -91,7 +91,7 @@ QDataStream& Transaction::toStreamRaw(QDataStream &out) const
 Transaction Transaction::fromStreamRaw(QDataStream &out) const
 {
     Transaction ret;
-    float priceValue;
+    double priceValue;
     QString priceStr;
     out
            //>> ret.classType

@@ -36,6 +36,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionLoad, SIGNAL(triggered()), this, SLOT(dialogLoadFile()));
     connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(dialogSaveFileAs()));
 
+    ui->labelBalanceValue->setText(Money().to_str(" "));
+    ui->labelResidualThisMonthValue->setText(Money().to_str(" "));
+
     InitializeActCurrencyComboBox();
     ui->tableTransactions->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableTransactions->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -97,7 +100,7 @@ void MainWindow::addExpense()
 void MainWindow::dialogLoadFile()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-        tr("Load file"), QDir::currentPath(), tr("*.bin files"));
+        tr("Load file"), QDir::currentPath(), tr("*.bin"));
     if (fileName.size())
     {
         loadFile(fileName);
@@ -107,7 +110,7 @@ void MainWindow::dialogLoadFile()
 void MainWindow::dialogSaveFileAs()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
-        tr("Load file"), QDir::currentPath(), tr("*.bin files"));
+        tr("Load file"), QDir::currentPath(), tr("*.bin"));
     if (fileName.size())
     {
         saveFile(fileName);
@@ -154,7 +157,6 @@ void MainWindow::editTransaction()
             QSharedPointer<Income> newRowInc = QSharedPointer<Income>::create(*(editIncomeDialog.getIncome()));
             QSharedPointer<Transaction> newTransInc = qSharedPointerDynamicCast<Transaction>(newRowInc);
             mainMngr.setAt(tabRow, newTransInc);
-            updateMngrInTable(mainMngr);
         }
     }
     else if (rowTrans->getClassType() == "Expense")
@@ -166,11 +168,11 @@ void MainWindow::editTransaction()
             QSharedPointer<Expense> newRowExp = QSharedPointer<Expense>::create(*(editExpenseDialog.getExpense()));
             QSharedPointer<Transaction> newTransExp = qSharedPointerDynamicCast<Transaction>(newRowExp);
             mainMngr.setAt(tabRow, newTransExp);
-            updateMngrInTable(mainMngr);
         }
     }
     else
         qDebug() << "Failed to extract transaction from " << tabRow << " row";
+    updateMngrInTable(mainMngr);
 }
 
 void MainWindow::removeTransaction()
@@ -219,6 +221,8 @@ void MainWindow::updateMngrInTable(const Manager& argMngr)
             QTableWidgetItem *twSource = new QTableWidgetItem
                     (iterInc->getSource());
             ui->tableTransactions->setItem(i,TABCOLUMN(GOODSSOURCE),twSource);
+
+            ui->tableTransactions->item(i,TABCOLUMN(CLASSTR))->setBackground(QBrush(QColor(0,255,0,64)));   // light green
         }
         else if (iterTrans->getClassType() == QString("Expense"))
         {
@@ -228,13 +232,31 @@ void MainWindow::updateMngrInTable(const Manager& argMngr)
             QTableWidgetItem *twGoods = new QTableWidgetItem
                     (iterExp->getGoods());
             ui->tableTransactions->setItem(i,TABCOLUMN(GOODSSOURCE),twGoods);
+
+            ui->tableTransactions->item(i,TABCOLUMN(CLASSTR))->setBackground(QBrush(QColor(255,0,0,64)));   // light red
         }
     }
 
     if (isBackupEnabled)
         saveFile(backupPath);
 
+    updateStats(mainMngr);
     //todo stats update, balance check
+}
+
+void MainWindow::updateStats(const Manager& mngr)
+{
+    Money residual = mngr.residual();
+    residual.convertTo(CurrConversion::activeCurrency);
+    ui->labelBalanceValue->setText(residual.to_str(" "));
+    ui->labelBalanceValue->setStyleSheet("QLabel { color: black }");    // reset
+    if (residual.getValue() <= 0)
+         ui->labelBalanceValue->setStyleSheet("QLabel { color: red }");
+
+    QDate currentDate = QDate::currentDate();
+    Money resThisMonth = mngr.residualDates(QDate(currentDate.year(), currentDate.month(), 1),
+                                            QDate(currentDate.year(), currentDate.month(), currentDate.daysInMonth()));
+    ui->labelResidualThisMonthValue->setText(resThisMonth.to_str(" "));
 }
 
 void MainWindow::on_comboBoxActiveCurrency_currentTextChanged(const QString &arg1)

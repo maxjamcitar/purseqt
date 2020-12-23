@@ -41,6 +41,7 @@ private:
     void updateMngrInTable(const Manager& argMngr);
     bool loadFile(const QString& fileName);
     bool saveFile(const QString& fileName);
+    void updateStats(const Manager& mngr);
 
     Ui::MainWindow *ui;
 

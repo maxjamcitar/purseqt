@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>806</width>
-    <height>535</height>
+    <width>666</width>
+    <height>515</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,8 +22,8 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>781</width>
-      <height>241</height>
+      <width>641</width>
+      <height>271</height>
      </rect>
     </property>
     <property name="autoFillBackground">
@@ -67,8 +67,8 @@
    <widget class="QComboBox" name="comboBoxActiveCurrency">
     <property name="geometry">
      <rect>
-      <x>635</x>
-      <y>465</y>
+      <x>495</x>
+      <y>445</y>
       <width>70</width>
       <height>20</height>
      </rect>
@@ -77,8 +77,8 @@
    <widget class="QLabel" name="labelActiveCurrency">
     <property name="geometry">
      <rect>
-      <x>535</x>
-      <y>465</y>
+      <x>395</x>
+      <y>445</y>
       <width>90</width>
       <height>20</height>
      </rect>
@@ -90,8 +90,8 @@
    <widget class="QPushButton" name="buttonConvertMngr">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>460</y>
+      <x>580</x>
+      <y>440</y>
       <width>75</width>
       <height>30</height>
      </rect>
@@ -100,13 +100,65 @@
      <string>Convert all</string>
     </property>
    </widget>
+   <widget class="QLabel" name="labelBalance">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>290</y>
+      <width>47</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Balance:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelBalanceValue">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>290</y>
+      <width>100</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelResidualThisMonth">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>320</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Residual this month:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelResidualThisMonthValue">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>320</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>806</width>
+     <width>666</width>
      <height>21</height>
     </rect>
    </property>
@@ -119,6 +171,7 @@
     <addaction name="separator"/>
     <addaction name="actionLoad"/>
     <addaction name="actionSaveAs"/>
+    <addaction name="separator"/>
    </widget>
    <addaction name="contextMenu"/>
   </widget>
@@ -145,11 +198,6 @@
   <action name="actionSaveAs">
    <property name="text">
     <string>Save as...</string>
-   </property>
-  </action>
-  <action name="actionSave">
-   <property name="text">
-    <string>Save</string>
    </property>
   </action>
  </widget>

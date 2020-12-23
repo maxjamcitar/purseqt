@@ -14,7 +14,7 @@ DialogAddIncome::DialogAddIncome(QWidget *parent) :
     ui->dateEdit->setDate(QDate::currentDate());
 
     ui->dateEdit->setMaximumDate(QDate::currentDate());
-    ui->lineEditMoneyValue->setValidator( new QDoubleValidator(0.0, std::numeric_limits<float>::max(), 2, this));
+    ui->lineEditMoneyValue->setValidator( new QDoubleValidator(0.0, std::numeric_limits<double>::max(), 2, this));
 
     date = QDate::currentDate();
     moneyValue = 0;
@@ -65,7 +65,7 @@ void DialogAddIncome::on_dateEdit_userDateChanged(const QDate &date)
 
 void DialogAddIncome::on_lineEditMoneyValue_textChanged(const QString &arg1)
 {
-    this->moneyValue = arg1.toFloat();
+    this->moneyValue = arg1.toDouble();
 }
 
 void DialogAddIncome::on_comboBoxCurrency_currentTextChanged(const QString &arg1)

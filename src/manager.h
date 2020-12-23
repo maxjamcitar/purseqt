@@ -48,6 +48,7 @@ public:
     void sort(ParameterType field, bool isAscending);
     QString show() const;
     Money accounting () const;
+    Money residualDates(const QDate& date1, const QDate& date2) const;
     Money accountingExps () const;
     Money accountingIncs () const;
     Money residual () const;

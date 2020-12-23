@@ -17,10 +17,10 @@ class CurrConversion : public QObject
 public:
     CurrConversion();
     ~CurrConversion();
-    static void addCurrency (const QString& currName, const float coef);
+    static void addCurrency (const QString& currName, const double coef);
     static void removeCurrency (const QString& currName);
     static void clearMap ();
-    static float getCoef (const QString& currName);
+    static double getCoef (const QString& currName);
     static bool isCurrSaved (const QString& currName);
     static QString getActiveCurrency ();
     static void changeActiveCurrency (const QString& otherCurr);
@@ -34,7 +34,7 @@ private slots:
 
 private:
     //QNetworkReply *reply;
-    static QMap<QString, float> currencyMap;   // "float" is coefficient for conversion: 1 USD -> "float" CURR
+    static QMap<QString, double> currencyMap;   // "double" is coefficient for conversion: 1 USD -> "double" CURR
 };
 
 class Money
@@ -42,11 +42,11 @@ class Money
 public:
     Money();
     ~Money();
-    Money(const float otherValue);
-    Money(const float otherValue, const QString& otherCurr);
+    Money(const double otherValue);
+    Money(const double otherValue, const QString& otherCurr);
     Money(const Money &otherMoney);
-    float getValue() const;
-    void setValue (float otherValue);
+    double getValue() const;
+    void setValue (double otherValue);
     QString getCurrency() const;
     void setCurrency(const QString& otherCurrency);
     bool convertTo (const QString &otherCurr);
@@ -63,7 +63,7 @@ public:
     static QString getActiveCurrency ();
     static void changeActiveCurrency (QString otherCurr);
 private:
-    float value;
+    double value;
     QString currency;
 };
 

@@ -69,7 +69,7 @@ QDataStream& Expense::toStreamRaw(QDataStream &out) const
 Expense Expense::fromStreamRaw(QDataStream &out)
 {
     Expense ret;
-    float priceValue;
+    double priceValue;
     QString priceStr;
     out
            //>> ret.classType   // commented because it's taken in class check
