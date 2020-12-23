@@ -191,6 +191,19 @@
      <string>Show chart</string>
     </property>
    </widget>
+   <widget class="QLabel" name="labelResidualUsual">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>360</y>
+      <width>641</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>This month you spent 0  more than usual.</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

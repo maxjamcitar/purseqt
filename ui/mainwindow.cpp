@@ -4,8 +4,9 @@
 #include "ui/dialogaddexpense.h"
 #include "ui/dialogeditincome.h"
 #include "ui/dialogeditexpense.h"
+#include "ui/dialogresidualchart.h"
 
-enum TABCOLUMN {CLASSTR = 0, DATE, VALUE, GOODSSOURCE, COMMENT};    // change if column order changes
+enum TABCOLUMN {CLASSTR = 0, T_DATE, T_VALUE, T_GOODSSOURCE, T_COMMENT};    // change if column order changes
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -40,6 +41,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->labelBalanceValue->setText(Money().to_str(" "));
     ui->labelResidualThisMonthValue->setText(Money().to_str(" "));
     ui->labelResidualAvgMonthValue->setText(Money().to_str(" "));
+    ui->labelResidualUsual->setText(makeStrResidualUsual(Money(), Money()));
+
 
     InitializeActCurrencyComboBox();
     ui->tableTransactions->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -48,6 +51,27 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //try to load from startup.bin
     loadFile(startupPath);
+}
+
+QString MainWindow::makeStrResidualUsual(const Money& moneyValue, const Money& moneyAvg) const
+{
+    QString result("");
+    double moneyValueAbs = std::abs((moneyAvg - moneyValue).getValue());
+    if (moneyValue == moneyAvg)
+    {
+        result = QString("This month you are left with money exactly like usual.");
+    }
+    else if (moneyValue < moneyAvg)
+    {
+        result = QStringLiteral("This month you are left with %1 less than usual. Try to reduce your expenses!")
+                .arg(Money(moneyValueAbs).to_str(" "));
+    }
+    else if (moneyValue > moneyAvg)
+    {
+        result = QStringLiteral("This month you are left with %1 more than usual. Good job, keep it up!")
+                .arg(Money(moneyValueAbs).to_str(" "));
+    }
+    return result;
 }
 
 MainWindow::~MainWindow()
@@ -202,18 +226,18 @@ void MainWindow::updateMngrInTable(const Manager& argMngr)
         // adding date
         QTableWidgetItem *twDate = new QTableWidgetItem
                 (iterTrans->getDate().toString("dd/MM/yyyy"));
-        ui->tableTransactions->setItem(i,TABCOLUMN(DATE),twDate);
+        ui->tableTransactions->setItem(i,TABCOLUMN(T_DATE),twDate);
 
         // adding value
         Money transMoney (iterTrans->getMoney());
         QTableWidgetItem *twMoney = new QTableWidgetItem
                 (transMoney.to_str(" "));
-        ui->tableTransactions->setItem(i,TABCOLUMN(VALUE),twMoney);
+        ui->tableTransactions->setItem(i,TABCOLUMN(T_VALUE),twMoney);
 
         // adding comment
         QTableWidgetItem *twComment = new QTableWidgetItem
                 (iterTrans->getComment());
-        ui->tableTransactions->setItem(i,TABCOLUMN(COMMENT),twComment);
+        ui->tableTransactions->setItem(i,TABCOLUMN(T_COMMENT),twComment);
 
         if (iterTrans->getClassType() == QString("Income"))
         {
@@ -222,7 +246,7 @@ void MainWindow::updateMngrInTable(const Manager& argMngr)
             // adding source
             QTableWidgetItem *twSource = new QTableWidgetItem
                     (iterInc->getSource());
-            ui->tableTransactions->setItem(i,TABCOLUMN(GOODSSOURCE),twSource);
+            ui->tableTransactions->setItem(i,TABCOLUMN(T_GOODSSOURCE),twSource);
 
             ui->tableTransactions->item(i,TABCOLUMN(CLASSTR))->setBackground(QBrush(QColor(0,255,0,64)));   // light green
         }
@@ -233,7 +257,7 @@ void MainWindow::updateMngrInTable(const Manager& argMngr)
             // adding goods
             QTableWidgetItem *twGoods = new QTableWidgetItem
                     (iterExp->getGoods());
-            ui->tableTransactions->setItem(i,TABCOLUMN(GOODSSOURCE),twGoods);
+            ui->tableTransactions->setItem(i,TABCOLUMN(T_GOODSSOURCE),twGoods);
 
             ui->tableTransactions->item(i,TABCOLUMN(CLASSTR))->setBackground(QBrush(QColor(255,0,0,64)));   // light red
         }
@@ -279,8 +303,7 @@ void MainWindow::updateStats(const Manager& mngr)
     if (months != 0)
         resAverageMonth.setValue(resAverageMonthValue / months);
     ui->labelResidualAvgMonthValue->setText(resAverageMonth.to_str(" "));
-
-
+    ui->labelResidualUsual->setText(makeStrResidualUsual(resThisMonth, resAverageMonth));
 }
 
 void MainWindow::on_comboBoxActiveCurrency_currentTextChanged(const QString &arg1)
@@ -316,5 +339,6 @@ void MainWindow::on_buttonConvertMngr_clicked()
 
 void MainWindow::on_buttonShowChart_clicked()
 {
-
+    DialogResidualChart residualChartDialog(nullptr, &mainMngr);
+    residualChartDialog.exec();
 }

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets network
+QT       += core gui widgets network charts
 
 TARGET = purseqt
 TEMPLATE = app
@@ -20,6 +20,7 @@ SOURCES +=  src/main.cpp \
     ui/dialogaddincome.cpp \
     ui/dialogeditexpense.cpp \
     ui/dialogeditincome.cpp \
+    ui/dialogresidualchart.cpp \
     ui/mainwindow.cpp
 
 HEADERS  += src/expense.h \
@@ -31,6 +32,7 @@ HEADERS  += src/expense.h \
     ui/dialogaddincome.h \
     ui/dialogeditexpense.h \
     ui/dialogeditincome.h \
+    ui/dialogresidualchart.h \
     ui/mainwindow.h
 
 FORMS    += \
@@ -38,4 +40,5 @@ FORMS    += \
     ui/dialogaddincome.ui \
     ui/dialogeditexpense.ui \
     ui/dialogeditincome.ui \
+    ui/dialogresidualchart.ui \
     ui/mainwindow.ui

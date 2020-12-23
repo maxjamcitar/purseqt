@@ -190,7 +190,11 @@ bool Money::operator< (const Money &otherMoney) const
 
 bool Money::operator== (const Money &otherMoney) const
 {
-    return !(operator>(otherMoney) || operator<(otherMoney));
+    Money thisConverted(*this);
+    thisConverted.convertTo("USD");
+    Money otherConverted(otherMoney);
+    otherConverted.convertTo("USD");
+    return (thisConverted.getValue() == otherConverted.getValue()) ? true : false;
 }
 
 Money Money::operator+ (const Money &otherMoney) const

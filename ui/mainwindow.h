@@ -5,6 +5,7 @@
 #include <QTableWidget>
 #include <QLayout>
 #include <QFileDialog>
+#include <cmath>
 
 #include "src/manager.h"
 #include "src/money.h"
@@ -44,6 +45,8 @@ private:
     bool loadFile(const QString& fileName);
     bool saveFile(const QString& fileName);
     void updateStats(const Manager& mngr);
+
+    QString makeStrResidualUsual(const Money& moneyValue, const Money& moneyAvg) const;
 
     Ui::MainWindow *ui;
 
