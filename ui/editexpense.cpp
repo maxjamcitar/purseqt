@@ -7,6 +7,9 @@ EditExpense::EditExpense(QWidget *parent, QSharedPointer<Expense>* otherExpInst)
 {
     ui->setupUi(this);
 
+    // make window not resizable
+    setFixedSize( QSize(this->geometry().size()) );
+
     ui->dateEdit->setMaximumDate(QDate::currentDate());
     ui->lineEditMoneyValue->setValidator( new QDoubleValidator(0.0, std::numeric_limits<float>::max(), 2, this));
 

@@ -5,13 +5,22 @@
 #include "ui/editincome.h"
 #include "ui/editexpense.h"
 
-enum TABCOLUMN {CLASSTR = 0, DATE, VALUE, GOODSSOURCE, COMMENT};
+enum TABCOLUMN {CLASSTR = 0, DATE, VALUE, GOODSSOURCE, COMMENT};    // change if column order changes
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    isBackupEnabled = true;
+    backupPath = QDir::currentPath() + QString("\\backup.bin");
+
+    isStartupLoadEnabled = true;
+    startupPath = QDir::currentPath() + QString("\\startup.bin");
+
+    // make window not resizable
+    setFixedSize( QSize(this->geometry().size()) );
 
     // currency initialization
     CurrConversion::addCurrency("USD", 1);
@@ -21,10 +30,19 @@ MainWindow::MainWindow(QWidget *parent) :
     CurrConversion::changeActiveCurrency("RUB");
     CurrConversion().requestRatesHttp();
 
+    // context menu on top
+    connect(ui->actionAddIncome, SIGNAL(triggered()), this, SLOT(addIncome()));
+    connect(ui->actionAddExpense, SIGNAL(triggered()), this, SLOT(addExpense()));
+    connect(ui->actionLoad, SIGNAL(triggered()), this, SLOT(dialogLoadFile()));
+    connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(dialogSaveFileAs()));
+
     InitializeActCurrencyComboBox();
     ui->tableTransactions->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableTransactions->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableTransactions->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    //try to load from startup.bin
+
 }
 
 MainWindow::~MainWindow()
@@ -39,6 +57,87 @@ void MainWindow::InitializeActCurrencyComboBox()
     {
         if (*iter != CurrConversion::activeCurrency)
             ui->comboBoxActiveCurrency->addItem(*iter);
+    }
+}
+
+void MainWindow::addIncome()
+{
+    AddIncome addIncomeDialog;
+    if (addIncomeDialog.exec() == QDialog::Accepted)
+    {
+        QDate newDate = addIncomeDialog.getDate();
+        Money newMoney = addIncomeDialog.getMoney();
+        QString newSource = addIncomeDialog.getSource();
+        QString newComment = addIncomeDialog.getComment();
+        QSharedPointer<Income> newInc = QSharedPointer<Income>::create(newDate, newMoney, newComment, newSource);
+        QSharedPointer<Transaction> newTrans = qSharedPointerDynamicCast<Transaction>(newInc);
+        mainMngr.addEnd(newInc);
+
+        updateMngrInTable(mainMngr);
+    }
+}
+
+void MainWindow::addExpense()
+{
+    AddExpense addExpenseDialog;
+    if (addExpenseDialog.exec() == QDialog::Accepted)
+    {
+        QDate newDate = addExpenseDialog.getDate();
+        Money newMoney = addExpenseDialog.getMoney();
+        QString newGoods = addExpenseDialog.getGoods();
+        QString newComment = addExpenseDialog.getComment();
+        QSharedPointer<Expense> newInc = QSharedPointer<Expense>::create(newDate, newMoney, newComment, newGoods);
+        QSharedPointer<Transaction> newTrans = qSharedPointerDynamicCast<Transaction>(newInc);
+        mainMngr.addEnd(newInc);
+
+        updateMngrInTable(mainMngr);
+    }
+}
+
+void MainWindow::dialogLoadFile()
+{
+    QString fileName = QFileDialog::getOpenFileName(this,
+        tr("Load file"), QDir::currentPath(), tr("*.bin files"));
+    if (fileName.size())
+    {
+        loadFile(fileName);
+    }
+}
+
+void MainWindow::dialogSaveFileAs()
+{
+    QString fileName = QFileDialog::getSaveFileName(this,
+        tr("Load file"), QDir::currentPath(), tr("*.bin files"));
+    if (fileName.size())
+    {
+        saveFile(fileName);
+    }
+}
+
+bool MainWindow::loadFile(const QString& fileName)
+{
+    if (mainMngr.readFile(fileName))
+    {
+        updateMngrInTable(mainMngr);
+        return true;
+    }
+    else
+    {
+        qDebug() << "Failed to load file " + fileName + ".";
+        return false;
+    }
+}
+
+bool MainWindow::saveFile(const QString& fileName)
+{
+    if (mainMngr.writeFile(fileName))
+    {
+        return true;
+    }
+    else
+    {
+        qDebug() <<  "Failed to save in file " + fileName + ".";
+        return false;
     }
 }
 
@@ -132,42 +231,10 @@ void MainWindow::updateMngrInTable(const Manager& argMngr)
         }
     }
 
+    if (isBackupEnabled)
+        saveFile(backupPath);
     //todo export to backup.bin
     //todo stats update, balance check
-}
-
-void MainWindow::on_buttonAddIncome_clicked()
-{
-    AddIncome addIncomeDialog;
-    if (addIncomeDialog.exec() == QDialog::Accepted)
-    {
-        QDate newDate = addIncomeDialog.getDate();
-        Money newMoney = addIncomeDialog.getMoney();
-        QString newSource = addIncomeDialog.getSource();
-        QString newComment = addIncomeDialog.getComment();
-        QSharedPointer<Income> newInc = QSharedPointer<Income>::create(newDate, newMoney, newComment, newSource);
-        QSharedPointer<Transaction> newTrans = qSharedPointerDynamicCast<Transaction>(newInc);
-        mainMngr.addEnd(newInc);
-
-        updateMngrInTable(mainMngr);
-    }
-}
-
-void MainWindow::on_buttonAddExpense_clicked()
-{
-    AddExpense addExpenseDialog;
-    if (addExpenseDialog.exec() == QDialog::Accepted)
-    {
-        QDate newDate = addExpenseDialog.getDate();
-        Money newMoney = addExpenseDialog.getMoney();
-        QString newGoods = addExpenseDialog.getGoods();
-        QString newComment = addExpenseDialog.getComment();
-        QSharedPointer<Expense> newInc = QSharedPointer<Expense>::create(newDate, newMoney, newComment, newGoods);
-        QSharedPointer<Transaction> newTrans = qSharedPointerDynamicCast<Transaction>(newInc);
-        mainMngr.addEnd(newInc);
-
-        updateMngrInTable(mainMngr);
-    }
 }
 
 void MainWindow::on_comboBoxActiveCurrency_currentTextChanged(const QString &arg1)
@@ -201,4 +268,3 @@ void MainWindow::on_buttonConvertMngr_clicked()
     }
     updateMngrInTable(mainMngr);
 }
-

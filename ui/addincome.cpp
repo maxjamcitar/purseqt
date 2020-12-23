@@ -7,6 +7,9 @@ AddIncome::AddIncome(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // make window not resizable
+    setFixedSize( QSize(this->geometry().size()) );
+
     InitializeCurrencyComboBox();
     ui->dateEdit->setDate(QDate::currentDate());
 

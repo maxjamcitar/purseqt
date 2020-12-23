@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QTableWidget>
+#include <QLayout>
+#include <QFileDialog>
 
 #include "src/manager.h"
 #include "src/money.h"
@@ -20,9 +22,11 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_buttonAddIncome_clicked();
+    void addIncome();
+    void addExpense();
 
-    void on_buttonAddExpense_clicked();
+    void dialogLoadFile();
+    void dialogSaveFileAs();
 
     void on_comboBoxActiveCurrency_currentTextChanged(const QString &arg1);
 
@@ -35,8 +39,15 @@ private slots:
 private:
     void InitializeActCurrencyComboBox();
     void updateMngrInTable(const Manager& argMngr);
+    bool loadFile(const QString& fileName);
+    bool saveFile(const QString& fileName);
 
     Ui::MainWindow *ui;
+
+    bool isBackupEnabled;
+    QString backupPath;
+    bool isStartupLoadEnabled;
+    QString startupPath;
 
     Manager mainMngr;   // for all transaction data
 };

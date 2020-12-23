@@ -15,7 +15,7 @@ public:
     QString getGoods() const;
     virtual QString toString() const override;
     virtual QDataStream& toStreamRaw(QDataStream &out) const override;
-    Expense fromStreamRaw(QDataStream &out) const;
+    Expense fromStreamRaw(QDataStream &out);
 private:
     QString goods;
 };

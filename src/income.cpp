@@ -46,7 +46,6 @@ QString Income::getSource() const
     return source;
 }
 
-
 QString Income::toString() const
 {
     int year, month, day;
@@ -66,7 +65,7 @@ QDataStream& Income::toStreamRaw(QDataStream &out) const
     return out;
 }
 
-Income Income::fromStreamRaw(QDataStream &out) const
+Income Income::fromStreamRaw(QDataStream &out)
 {
     Income ret;
     float priceValue;
@@ -78,6 +77,9 @@ Income Income::fromStreamRaw(QDataStream &out) const
            >> ret.source
            >> ret.comment;
     ret.money.setValue(priceValue);
-    ret.money.convertTo(priceStr);
+    ret.money.setCurrency(priceStr);
+
+    (*this) = ret;
+
     return ret;
 }

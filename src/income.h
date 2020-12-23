@@ -2,6 +2,7 @@
 #define INCOME_H
 
 #include "transaction.h"
+#include <QDateTime>
 
 class Income : public Transaction
 {
@@ -14,7 +15,7 @@ public:
     QString getSource() const;
     virtual QString toString() const override;
     virtual QDataStream& toStreamRaw(QDataStream &out) const override;
-    Income fromStreamRaw(QDataStream &out) const;
+    Income fromStreamRaw(QDataStream &out);
 private:
     QString source;
 };

@@ -56,7 +56,6 @@ QString Expense::toString() const
             .arg(strDate).arg(this->money.to_str()).arg(this->goods).arg(this->comment);
 }
 
-
 QDataStream& Expense::toStreamRaw(QDataStream &out) const
 {
     out << this->classType
@@ -67,7 +66,7 @@ QDataStream& Expense::toStreamRaw(QDataStream &out) const
     return out;
 }
 
-Expense Expense::fromStreamRaw(QDataStream &out) const
+Expense Expense::fromStreamRaw(QDataStream &out)
 {
     Expense ret;
     float priceValue;
@@ -79,7 +78,9 @@ Expense Expense::fromStreamRaw(QDataStream &out) const
            >> ret.goods
            >> ret.comment;
     ret.money.setValue(priceValue);
-    ret.money.convertTo(priceStr);
+    ret.money.setCurrency(priceStr);
+
+    (*this) = ret;
+
     return ret;
 }
-
