@@ -35,6 +35,9 @@ public:
     QSharedPointer<Transaction> getEnd();
     QSharedPointer<Transaction> getAt(const int i);
 
+    QDate getMinDate() const;
+    QDate getMaxDate() const;
+
     qsizetype getIndex(QSharedPointer<Transaction> tran);
 
     void setBegin(QSharedPointer<Transaction> tran);

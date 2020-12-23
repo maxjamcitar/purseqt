@@ -36,8 +36,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionLoad, SIGNAL(triggered()), this, SLOT(dialogLoadFile()));
     connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(dialogSaveFileAs()));
 
+    // initial stats
     ui->labelBalanceValue->setText(Money().to_str(" "));
     ui->labelResidualThisMonthValue->setText(Money().to_str(" "));
+    ui->labelResidualAvgMonthValue->setText(Money().to_str(" "));
 
     InitializeActCurrencyComboBox();
     ui->tableTransactions->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -246,6 +248,7 @@ void MainWindow::updateMngrInTable(const Manager& argMngr)
 
 void MainWindow::updateStats(const Manager& mngr)
 {
+    // overall balance
     Money residual = mngr.residual();
     residual.convertTo(CurrConversion::activeCurrency);
     ui->labelBalanceValue->setText(residual.to_str(" "));
@@ -253,10 +256,32 @@ void MainWindow::updateStats(const Manager& mngr)
     if (residual.getValue() <= 0)
          ui->labelBalanceValue->setStyleSheet("QLabel { color: red }");
 
+    // residual current month
     QDate currentDate = QDate::currentDate();
     Money resThisMonth = mngr.residualDates(QDate(currentDate.year(), currentDate.month(), 1),
                                             QDate(currentDate.year(), currentDate.month(), currentDate.daysInMonth()));
     ui->labelResidualThisMonthValue->setText(resThisMonth.to_str(" "));
+
+    // average residual for all months
+    Money resAverageMonth;
+    QDate minDate = mngr.getMinDate();
+    QDate maxDate = mngr.getMaxDate();
+    QDate iterDate = minDate;
+    int months = 0;
+    while (iterDate <= maxDate)
+    {
+        Money resThisMonth = mngr.residualDates(QDate(iterDate.year(), iterDate.month(), 1),
+                                                QDate(iterDate.year(), iterDate.month(), iterDate.daysInMonth()));
+        resAverageMonth += resThisMonth;
+        iterDate = iterDate.addMonths(1);
+        months++;
+    }
+    double resAverageMonthValue = resAverageMonth.getValue();
+    if (months != 0)
+        resAverageMonth.setValue(resAverageMonthValue / months);
+    ui->labelResidualAvgMonthValue->setText(resAverageMonth.to_str(" "));
+
+
 }
 
 void MainWindow::on_comboBoxActiveCurrency_currentTextChanged(const QString &arg1)

@@ -92,6 +92,30 @@ qsizetype Manager::getIndex(QSharedPointer<Transaction> tran)
     return dqueue.indexOf(tran);
 }
 
+QDate Manager::getMinDate() const
+{
+    QDate minDate = QDate(9999, 12, 31);
+    for (auto iter = dqueue.begin(); iter != dqueue.end(); ++iter)
+    {
+        QDate iterDate = (*iter)->getDate();
+        if (iterDate < minDate)
+            minDate = (*iter)->getDate();
+    }
+    return minDate;
+}
+
+QDate Manager::getMaxDate() const
+{
+    QDate maxDate = QDate(1, 1, 1);
+    for (auto iter = dqueue.begin(); iter != dqueue.end(); ++iter)
+    {
+        QDate iterDate = (*iter)->getDate();
+        if (iterDate > maxDate)
+            maxDate = (*iter)->getDate();
+    }
+    return maxDate;
+}
+
 void Manager::setBegin(QSharedPointer<Transaction> tran)
 {
     if (dqueue.size() != 0)
