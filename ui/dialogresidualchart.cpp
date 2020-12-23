@@ -24,7 +24,9 @@ DialogResidualChart::DialogResidualChart(QWidget *parent, Manager* otherMngr) :
         Money resThisMonth = mngr.residualDates(QDate(iterDate.year(), iterDate.month(), 1),
                                                 QDate(iterDate.year(), iterDate.month(), iterDate.daysInMonth()));
         QDate iterDateMid(QDate(iterDate.year(), iterDate.month(), 15));
-        series->append(iterDateMid.startOfDay().toMSecsSinceEpoch(), resThisMonth.getValue());
+        double resThisMonthValue = resThisMonth.getValue();
+        resThisMonthValue = std::round(resThisMonthValue * 100.0) / 100.0;  // rounding
+        series->append(iterDateMid.startOfDay().toMSecsSinceEpoch(), resThisMonthValue);
 
         if (resThisMonth.getValue() < minValue)
             minValue = resThisMonth.getValue();
@@ -40,6 +42,7 @@ DialogResidualChart::DialogResidualChart(QWidget *parent, Manager* otherMngr) :
         resAverageMonth.setValue(resAverageMonthValue / months);
 
     QLineSeries *seriesAvg = new QLineSeries();
+    resAverageMonthValue = std::round(resAverageMonthValue * 100.0) / 100.0;    // rounding
     seriesAvg->append(QDate(minDate.year(), minDate.month(), 15).startOfDay().toMSecsSinceEpoch(), resAverageMonthValue);
     seriesAvg->append(QDate(iterDate.addMonths(-1).year(), iterDate.addMonths(-1).month(), 15).startOfDay().toMSecsSinceEpoch(), resAverageMonthValue);
 

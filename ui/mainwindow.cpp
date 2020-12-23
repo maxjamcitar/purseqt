@@ -36,13 +36,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionAddExpense, SIGNAL(triggered()), this, SLOT(addExpense()));
     connect(ui->actionLoad, SIGNAL(triggered()), this, SLOT(dialogLoadFile()));
     connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(dialogSaveFileAs()));
+    ui->actionSaveAs->setShortcuts(QKeySequence::Save);
 
     // initial stats
     ui->labelBalanceValue->setText(Money().to_str(" "));
     ui->labelResidualThisMonthValue->setText(Money().to_str(" "));
     ui->labelResidualAvgMonthValue->setText(Money().to_str(" "));
     ui->labelResidualUsual->setText(makeStrResidualUsual(Money(), Money()));
-
 
     InitializeActCurrencyComboBox();
     ui->tableTransactions->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -313,16 +313,17 @@ void MainWindow::on_comboBoxActiveCurrency_currentTextChanged(const QString &arg
 
 void MainWindow::on_tableTransactions_customContextMenuRequested(const QPoint &pos)
 {
-    QMenu contextMenu(tr("Context menu"), this);
+    QMenu* contextMenu = new QMenu((tr("Context menu"), this));
 
-    contextMenu.addAction(new QAction(tr("Edit item"), this));
-    QSharedPointer<QAction> editItemAction = QSharedPointer<QAction>::create(tr("Edit item"), this);
-    connect(editItemAction.get(), SIGNAL(triggered()), this, SLOT(editTransaction()));
+    auto newAct = new QAction(tr("Edit item"), this);
+    contextMenu->addAction(newAct);
+    connect(newAct, &QAction::triggered, this, &MainWindow::editTransaction);
 
-    QSharedPointer<QAction> deleteItemAction = QSharedPointer<QAction>::create(tr("Delete item"), this);
-    connect(deleteItemAction.get(), SIGNAL(triggered()), this, SLOT(removeTransaction()));
+    newAct = new QAction(tr("Delete item"), this);
+    contextMenu->addAction(newAct);
+    connect(newAct, &QAction::triggered, this, &MainWindow::removeTransaction);
 
-    contextMenu.exec(ui->tableTransactions->mapToGlobal(pos));
+    contextMenu->exec(ui->tableTransactions->mapToGlobal(pos));
 }
 
 void MainWindow::on_buttonConvertMngr_clicked()

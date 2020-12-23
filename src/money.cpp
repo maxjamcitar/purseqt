@@ -239,5 +239,5 @@ void Money::operator-= (const Money &otherMoney)
 
 QString Money::to_str (QString sep) const
 {
-    return QStringLiteral("%1%2%3").arg( QString::number(this->getValue(), 'f', 2)).arg(sep).arg(this->getCurrency());
+    return QStringLiteral("%1%2%3").arg( QString::number(this->getValue(), 'd', 2)).arg(sep).arg(this->getCurrency());
 }
