@@ -1,7 +1,7 @@
-#include "editincome.h"
-#include "ui_editincome.h"
+#include "dialogeditincome.h"
+#include "ui_dialogeditincome.h"
 
-EditIncome::EditIncome(QWidget *parent, QSharedPointer<Income>* otherIncInst) :
+DialogEditIncome::DialogEditIncome(QWidget *parent, QSharedPointer<Income>* otherIncInst) :
     QDialog(parent),
     ui(new Ui::EditIncome)
 {
@@ -30,12 +30,12 @@ EditIncome::EditIncome(QWidget *parent, QSharedPointer<Income>* otherIncInst) :
     ui->dateEdit->setDate(incInst->getDate());
 }
 
-EditIncome::~EditIncome()
+DialogEditIncome::~DialogEditIncome()
 {
     delete ui;
 }
 
-void EditIncome::InitializeCurrencyComboBox()
+void DialogEditIncome::InitializeCurrencyComboBox()
 {
     ui->comboBoxCurrency->addItem(incInst->getMoney().getCurrency());  // to make active curr on top
     for (auto iter = CurrConversion::currencyList.begin(); iter != CurrConversion::currencyList.end(); ++iter)
@@ -45,56 +45,56 @@ void EditIncome::InitializeCurrencyComboBox()
     }
 }
 
-QDate EditIncome::getDate() const
+QDate DialogEditIncome::getDate() const
 {
     return incInst->getDate();
 }
 
-Money EditIncome::getMoney() const
+Money DialogEditIncome::getMoney() const
 {
     return incInst->getMoney();
 }
 
-QString EditIncome::getSource() const
+QString DialogEditIncome::getSource() const
 {
     return incInst->getSource();
 }
 
-QString EditIncome::getComment() const
+QString DialogEditIncome::getComment() const
 {
     return incInst->getComment();
 }
 
-QSharedPointer<Income> EditIncome::getIncome() const
+QSharedPointer<Income> DialogEditIncome::getIncome() const
 {
     return incInst;
 }
 
-void EditIncome::on_dateEdit_userDateChanged(const QDate &date)
+void DialogEditIncome::on_dateEdit_userDateChanged(const QDate &date)
 {
     incInst->setDate(date);
 }
 
-void EditIncome::on_lineEditMoneyValue_textChanged(const QString &arg1)
+void DialogEditIncome::on_lineEditMoneyValue_textChanged(const QString &arg1)
 {
     Money thisMoney = incInst->getMoney();
     thisMoney.setValue(arg1.toFloat());
     incInst->setMoney(thisMoney);
 }
 
-void EditIncome::on_comboBoxCurrency_currentTextChanged(const QString &arg1)
+void DialogEditIncome::on_comboBoxCurrency_currentTextChanged(const QString &arg1)
 {
     Money thisMoney = incInst->getMoney();
     thisMoney.setCurrency(arg1);
     incInst->setMoney(thisMoney);
 }
 
-void EditIncome::on_lineEditSource_textChanged(const QString &arg1)
+void DialogEditIncome::on_lineEditSource_textChanged(const QString &arg1)
 {
     incInst->setSource(arg1);
 }
 
-void EditIncome::on_lineEditComment_textChanged(const QString &arg1)
+void DialogEditIncome::on_lineEditComment_textChanged(const QString &arg1)
 {
     incInst->setComment(arg1);
 }

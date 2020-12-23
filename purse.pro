@@ -16,25 +16,26 @@ SOURCES +=  src/main.cpp \
     src/money.cpp \
     src/manager.cpp \
     src/transaction.cpp \
-    ui/editexpense.cpp \
-    ui/editincome.cpp \
-    ui/mainwindow.cpp \
-    ui/addexpense.cpp \
-    ui/addincome.cpp
+    ui/dialogaddexpense.cpp \
+    ui/dialogaddincome.cpp \
+    ui/dialogeditexpense.cpp \
+    ui/dialogeditincome.cpp \
+    ui/mainwindow.cpp
 
 HEADERS  += src/expense.h \
     src/income.h \
     src/money.h \
     src/manager.h \
     src/transaction.h \
-    ui/editexpense.h \
-    ui/editincome.h \
-    ui/mainwindow.h \
-    ui/addexpense.h \
-    ui/addincome.h
+    ui/dialogaddexpense.h \
+    ui/dialogaddincome.h \
+    ui/dialogeditexpense.h \
+    ui/dialogeditincome.h \
+    ui/mainwindow.h
 
-FORMS    += ui/addexpense.ui \
-    ui/addincome.ui \
-    ui/editexpense.ui \
-    ui/editincome.ui \
+FORMS    += \
+    ui/dialogaddexpense.ui \
+    ui/dialogaddincome.ui \
+    ui/dialogeditexpense.ui \
+    ui/dialogeditincome.ui \
     ui/mainwindow.ui

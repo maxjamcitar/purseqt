@@ -1,31 +1,29 @@
-#ifndef EDITINCOME_H
-#define EDITINCOME_H
+#ifndef ADDINCOME_H
+#define ADDINCOME_H
 
 #include <QDialog>
-#include <QTableWidget>
+#include <QDate>
+#include <QDoubleValidator>
 #include "src/money.h"
-#include "src/transaction.h"
-#include "src/income.h"
 
 namespace Ui {
-class EditIncome;
+class AddIncome;
 }
 
-class EditIncome : public QDialog
+class DialogAddIncome : public QDialog
 {
     Q_OBJECT
 
-public:
-    explicit EditIncome(QWidget *parent = nullptr, QSharedPointer<Income>* otherIncInst = nullptr);
-    ~EditIncome();
-
     void InitializeCurrencyComboBox();
+
+public:
+    explicit DialogAddIncome(QWidget *parent = nullptr);
+    ~DialogAddIncome();
 
     QDate getDate() const;
     Money getMoney() const;
     QString getSource() const;
     QString getComment() const;
-    QSharedPointer<Income> getIncome() const;
 
 private slots:
     void on_dateEdit_userDateChanged(const QDate &date);
@@ -39,9 +37,13 @@ private slots:
     void on_lineEditComment_textChanged(const QString &arg1);
 
 private:
-    Ui::EditIncome *ui;
+    Ui::AddIncome *ui;
 
-    QSharedPointer<Income> incInst;
+    QDate date;
+    float moneyValue;
+    QString currency;
+    QString source;
+    QString comment;
 };
 
-#endif // EDITINCOME_H
+#endif // ADDINCOME_H

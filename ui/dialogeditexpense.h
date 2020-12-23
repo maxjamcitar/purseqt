@@ -11,13 +11,13 @@ namespace Ui {
 class EditExpense;
 }
 
-class EditExpense : public QDialog
+class DialogEditExpense : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit EditExpense(QWidget *parent = nullptr, QSharedPointer<Expense>* otherExpInst = nullptr);
-    ~EditExpense();
+    explicit DialogEditExpense(QWidget *parent = nullptr, QSharedPointer<Expense>* otherExpInst = nullptr);
+    ~DialogEditExpense();
 
     void InitializeCurrencyComboBox();
 

@@ -72,7 +72,7 @@ Expense Expense::fromStreamRaw(QDataStream &out)
     float priceValue;
     QString priceStr;
     out
-           //>> ret.classType
+           //>> ret.classType   // commented because it's taken in class check
            >> ret.date
            >> priceValue >> priceStr
            >> ret.goods

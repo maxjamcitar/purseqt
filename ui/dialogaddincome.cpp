@@ -1,7 +1,7 @@
-#include "ui/addincome.h"
-#include "ui_addincome.h"
+#include "ui/dialogaddincome.h"
+#include "ui_dialogaddincome.h"
 
-AddIncome::AddIncome(QWidget *parent) :
+DialogAddIncome::DialogAddIncome(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AddIncome)
 {
@@ -23,12 +23,12 @@ AddIncome::AddIncome(QWidget *parent) :
     comment = QString("");
 }
 
-AddIncome::~AddIncome()
+DialogAddIncome::~DialogAddIncome()
 {
     delete ui;
 }
 
-void AddIncome::InitializeCurrencyComboBox()
+void DialogAddIncome::InitializeCurrencyComboBox()
 {
     ui->comboBoxCurrency->addItem(CurrConversion::activeCurrency);  // to make active curr on top
     for (auto iter = CurrConversion::currencyList.begin(); iter != CurrConversion::currencyList.end(); ++iter)
@@ -38,47 +38,47 @@ void AddIncome::InitializeCurrencyComboBox()
     }
 }
 
-QDate AddIncome::getDate() const
+QDate DialogAddIncome::getDate() const
 {
     return date;
 }
 
-Money AddIncome::getMoney() const
+Money DialogAddIncome::getMoney() const
 {
     return Money(moneyValue, currency);
 }
 
-QString AddIncome::getSource() const
+QString DialogAddIncome::getSource() const
 {
     return source;
 }
 
-QString AddIncome::getComment() const
+QString DialogAddIncome::getComment() const
 {
     return comment;
 }
 
-void AddIncome::on_dateEdit_userDateChanged(const QDate &date)
+void DialogAddIncome::on_dateEdit_userDateChanged(const QDate &date)
 {
     this->date = date;
 }
 
-void AddIncome::on_lineEditMoneyValue_textChanged(const QString &arg1)
+void DialogAddIncome::on_lineEditMoneyValue_textChanged(const QString &arg1)
 {
     this->moneyValue = arg1.toFloat();
 }
 
-void AddIncome::on_comboBoxCurrency_currentTextChanged(const QString &arg1)
+void DialogAddIncome::on_comboBoxCurrency_currentTextChanged(const QString &arg1)
 {
     this->currency = arg1;
 }
 
-void AddIncome::on_lineEditSource_textChanged(const QString &arg1)
+void DialogAddIncome::on_lineEditSource_textChanged(const QString &arg1)
 {
     this->source = arg1;
 }
 
-void AddIncome::on_lineEditComment_textChanged(const QString &arg1)
+void DialogAddIncome::on_lineEditComment_textChanged(const QString &arg1)
 {
     this->comment = arg1;
 }

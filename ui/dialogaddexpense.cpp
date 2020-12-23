@@ -1,7 +1,7 @@
-#include "ui/addexpense.h"
-#include "ui_addexpense.h"
+#include "ui/dialogaddexpense.h"
+#include "ui_dialogaddexpense.h"
 
-AddExpense::AddExpense(QWidget *parent) :
+DialogAddExpense::DialogAddExpense(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AddExpense)
 {
@@ -23,12 +23,12 @@ AddExpense::AddExpense(QWidget *parent) :
     comment = QString("");
 }
 
-AddExpense::~AddExpense()
+DialogAddExpense::~DialogAddExpense()
 {
     delete ui;
 }
 
-void AddExpense::InitializeCurrencyComboBox()
+void DialogAddExpense::InitializeCurrencyComboBox()
 {
     ui->comboBoxCurrency->addItem(CurrConversion::activeCurrency);  // to make active curr on top
     for (auto iter = CurrConversion::currencyList.begin(); iter != CurrConversion::currencyList.end(); ++iter)
@@ -38,47 +38,47 @@ void AddExpense::InitializeCurrencyComboBox()
     }
 }
 
-QDate AddExpense::getDate() const
+QDate DialogAddExpense::getDate() const
 {
     return date;
 }
 
-Money AddExpense::getMoney() const
+Money DialogAddExpense::getMoney() const
 {
     return Money(moneyValue, currency);
 }
 
-QString AddExpense::getGoods() const
+QString DialogAddExpense::getGoods() const
 {
     return goods;
 }
 
-QString AddExpense::getComment() const
+QString DialogAddExpense::getComment() const
 {
     return comment;
 }
 
-void AddExpense::on_dateEdit_userDateChanged(const QDate &date)
+void DialogAddExpense::on_dateEdit_userDateChanged(const QDate &date)
 {
     this->date = date;
 }
 
-void AddExpense::on_lineEditMoneyValue_textChanged(const QString &arg1)
+void DialogAddExpense::on_lineEditMoneyValue_textChanged(const QString &arg1)
 {
     this->moneyValue = arg1.toFloat();
 }
 
-void AddExpense::on_comboBoxCurrency_currentTextChanged(const QString &arg1)
+void DialogAddExpense::on_comboBoxCurrency_currentTextChanged(const QString &arg1)
 {
     this->currency = arg1;
 }
 
-void AddExpense::on_lineEditGoods_textChanged(const QString &arg1)
+void DialogAddExpense::on_lineEditGoods_textChanged(const QString &arg1)
 {
     this->goods = arg1;
 }
 
-void AddExpense::on_lineEditComment_textChanged(const QString &arg1)
+void DialogAddExpense::on_lineEditComment_textChanged(const QString &arg1)
 {
     this->comment = arg1;
 }

@@ -1,7 +1,7 @@
-#include "editexpense.h"
-#include "ui_editexpense.h"
+#include "dialogeditexpense.h"
+#include "ui_dialogeditexpense.h"
 
-EditExpense::EditExpense(QWidget *parent, QSharedPointer<Expense>* otherExpInst) :
+DialogEditExpense::DialogEditExpense(QWidget *parent, QSharedPointer<Expense>* otherExpInst) :
     QDialog(parent),
     ui(new Ui::EditExpense)
 {
@@ -30,12 +30,12 @@ EditExpense::EditExpense(QWidget *parent, QSharedPointer<Expense>* otherExpInst)
     ui->dateEdit->setDate(expInst->getDate());
 }
 
-EditExpense::~EditExpense()
+DialogEditExpense::~DialogEditExpense()
 {
     delete ui;
 }
 
-void EditExpense::InitializeCurrencyComboBox()
+void DialogEditExpense::InitializeCurrencyComboBox()
 {
     ui->comboBoxCurrency->addItem(expInst->getMoney().getCurrency());  // to make active curr on top
     for (auto iter = CurrConversion::currencyList.begin(); iter != CurrConversion::currencyList.end(); ++iter)
@@ -45,56 +45,56 @@ void EditExpense::InitializeCurrencyComboBox()
     }
 }
 
-QDate EditExpense::getDate() const
+QDate DialogEditExpense::getDate() const
 {
     return expInst->getDate();
 }
 
-Money EditExpense::getMoney() const
+Money DialogEditExpense::getMoney() const
 {
     return expInst->getMoney();
 }
 
-QString EditExpense::getGoods() const
+QString DialogEditExpense::getGoods() const
 {
     return expInst->getGoods();
 }
 
-QString EditExpense::getComment() const
+QString DialogEditExpense::getComment() const
 {
     return expInst->getComment();
 }
 
-QSharedPointer<Expense> EditExpense::getExpense() const
+QSharedPointer<Expense> DialogEditExpense::getExpense() const
 {
     return expInst;
 }
 
-void EditExpense::on_dateEdit_userDateChanged(const QDate &date)
+void DialogEditExpense::on_dateEdit_userDateChanged(const QDate &date)
 {
     expInst->setDate(date);
 }
 
-void EditExpense::on_lineEditMoneyValue_textChanged(const QString &arg1)
+void DialogEditExpense::on_lineEditMoneyValue_textChanged(const QString &arg1)
 {
     Money thisMoney = expInst->getMoney();
     thisMoney.setValue(arg1.toFloat());
     expInst->setMoney(thisMoney);
 }
 
-void EditExpense::on_comboBoxCurrency_currentTextChanged(const QString &arg1)
+void DialogEditExpense::on_comboBoxCurrency_currentTextChanged(const QString &arg1)
 {
     Money thisMoney = expInst->getMoney();
     thisMoney.setCurrency(arg1);
     expInst->setMoney(thisMoney);
 }
 
-void EditExpense::on_lineEditGoods_textChanged(const QString &arg1)
+void DialogEditExpense::on_lineEditGoods_textChanged(const QString &arg1)
 {
     expInst->setGoods(arg1);
 }
 
-void EditExpense::on_lineEditComment_textChanged(const QString &arg1)
+void DialogEditExpense::on_lineEditComment_textChanged(const QString &arg1)
 {
     expInst->setComment(arg1);
 }

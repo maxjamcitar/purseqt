@@ -10,15 +10,15 @@ namespace Ui {
 class AddExpense;
 }
 
-class AddExpense : public QDialog
+class DialogAddExpense : public QDialog
 {
     Q_OBJECT
 
     void InitializeCurrencyComboBox();
 
 public:
-    explicit AddExpense(QWidget *parent = nullptr);
-    ~AddExpense();
+    explicit DialogAddExpense(QWidget *parent = nullptr);
+    ~DialogAddExpense();
 
     QDate getDate() const;
     Money getMoney() const;

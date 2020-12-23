@@ -1,9 +1,9 @@
 #include "ui/mainwindow.h"
 #include "ui_mainwindow.h"
-#include "ui/addincome.h"
-#include "ui/addexpense.h"
-#include "ui/editincome.h"
-#include "ui/editexpense.h"
+#include "ui/dialogaddincome.h"
+#include "ui/dialogaddexpense.h"
+#include "ui/dialogeditincome.h"
+#include "ui/dialogeditexpense.h"
 
 enum TABCOLUMN {CLASSTR = 0, DATE, VALUE, GOODSSOURCE, COMMENT};    // change if column order changes
 
@@ -62,7 +62,7 @@ void MainWindow::InitializeActCurrencyComboBox()
 
 void MainWindow::addIncome()
 {
-    AddIncome addIncomeDialog;
+    DialogAddIncome addIncomeDialog;
     if (addIncomeDialog.exec() == QDialog::Accepted)
     {
         QDate newDate = addIncomeDialog.getDate();
@@ -79,7 +79,7 @@ void MainWindow::addIncome()
 
 void MainWindow::addExpense()
 {
-    AddExpense addExpenseDialog;
+    DialogAddExpense addExpenseDialog;
     if (addExpenseDialog.exec() == QDialog::Accepted)
     {
         QDate newDate = addExpenseDialog.getDate();
@@ -148,7 +148,7 @@ void MainWindow::editTransaction()
     if (rowTrans->getClassType() == "Income")
     {
         QSharedPointer<Income> rowInc = qSharedPointerDynamicCast<Income>(rowTrans);
-        EditIncome editIncomeDialog(this, &rowInc);
+        DialogEditIncome editIncomeDialog(this, &rowInc);
         if (editIncomeDialog.exec() == QDialog::Accepted)
         {
             QSharedPointer<Income> newRowInc = QSharedPointer<Income>::create(*(editIncomeDialog.getIncome()));
@@ -160,7 +160,7 @@ void MainWindow::editTransaction()
     else if (rowTrans->getClassType() == "Expense")
     {
         QSharedPointer<Expense> rowExp = qSharedPointerDynamicCast<Expense>(rowTrans);
-        EditExpense editExpenseDialog(this, &rowExp);
+        DialogEditExpense editExpenseDialog(this, &rowExp);
         if (editExpenseDialog.exec() == QDialog::Accepted)
         {
             QSharedPointer<Expense> newRowExp = QSharedPointer<Expense>::create(*(editExpenseDialog.getExpense()));
@@ -233,7 +233,7 @@ void MainWindow::updateMngrInTable(const Manager& argMngr)
 
     if (isBackupEnabled)
         saveFile(backupPath);
-    //todo export to backup.bin
+
     //todo stats update, balance check
 }
 
