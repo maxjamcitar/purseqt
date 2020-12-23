@@ -243,7 +243,6 @@ void MainWindow::updateMngrInTable(const Manager& argMngr)
         saveFile(backupPath);
 
     updateStats(mainMngr);
-    //todo stats update, balance check
 }
 
 void MainWindow::updateStats(const Manager& mngr)
@@ -293,13 +292,12 @@ void MainWindow::on_tableTransactions_customContextMenuRequested(const QPoint &p
 {
     QMenu contextMenu(tr("Context menu"), this);
 
-    QAction editItemAction = QAction(tr("Edit item"), this);
-    connect(&editItemAction, SIGNAL(triggered()), this, SLOT(editTransaction()));
-    contextMenu.addAction(&editItemAction);
+    contextMenu.addAction(new QAction(tr("Edit item"), this));
+    QSharedPointer<QAction> editItemAction = QSharedPointer<QAction>::create(tr("Edit item"), this);
+    connect(editItemAction.get(), SIGNAL(triggered()), this, SLOT(editTransaction()));
 
-    QAction deleteItemAction = QAction(tr("Delete item"), this);
-    connect(&deleteItemAction, SIGNAL(triggered()), this, SLOT(removeTransaction()));
-    contextMenu.addAction(&deleteItemAction);
+    QSharedPointer<QAction> deleteItemAction = QSharedPointer<QAction>::create(tr("Delete item"), this);
+    connect(deleteItemAction.get(), SIGNAL(triggered()), this, SLOT(removeTransaction()));
 
     contextMenu.exec(ui->tableTransactions->mapToGlobal(pos));
 }
@@ -314,4 +312,9 @@ void MainWindow::on_buttonConvertMngr_clicked()
         (*iter)->setMoney(currentPrice);
     }
     updateMngrInTable(mainMngr);
+}
+
+void MainWindow::on_buttonShowChart_clicked()
+{
+
 }

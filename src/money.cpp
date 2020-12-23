@@ -78,7 +78,7 @@ void CurrConversion::requestRatesHttp ()
     QNetworkAccessManager* manager = new QNetworkAccessManager();
     auto status = connect(manager, SIGNAL(finished(QNetworkReply*)),
                           this, SLOT(replyFinished(QNetworkReply*)));
-    manager->get(QNetworkRequest(QUrl("https://www.google.com")));
+    manager->get(QNetworkRequest(QUrl("https://api.exchangeratesapi.io/latest?base=USD HTTP/1.1")));
 
     //QByteArray data=reply->readAll();
     //qDebug() << data.data();

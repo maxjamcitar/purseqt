@@ -36,6 +36,8 @@ private slots:
 
     void on_buttonConvertMngr_clicked();
 
+    void on_buttonShowChart_clicked();
+
 private:
     void InitializeActCurrencyComboBox();
     void updateMngrInTable(const Manager& argMngr);
