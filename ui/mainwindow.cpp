@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableTransactions->setContextMenuPolicy(Qt::CustomContextMenu);
 
     //try to load from startup.bin
-
+    loadFile(startupPath);
 }
 
 MainWindow::~MainWindow()
