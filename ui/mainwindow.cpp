@@ -38,11 +38,20 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(dialogSaveFileAs()));
     ui->actionSaveAs->setShortcuts(QKeySequence::Save);
 
+    connect(ui->actionSortTransaction, SIGNAL(triggered()), this, SLOT(sortMngrByType()));
+    connect(ui->actionSortDate, SIGNAL(triggered()), this, SLOT(sortMngrByDate()));
+    connect(ui->actionSortMoney, SIGNAL(triggered()), this, SLOT(sortMngrByMoney()));
+    connect(ui->actionSortSourceGoods, SIGNAL(triggered()), this, SLOT(sortMngrBySourceGoods()));
+
+    connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
+
+
     // initial stats
     ui->labelBalanceValue->setText(Money().to_str(" "));
     ui->labelResidualThisMonthValue->setText(Money().to_str(" "));
     ui->labelResidualAvgMonthValue->setText(Money().to_str(" "));
     ui->labelResidualUsual->setText(makeStrResidualUsual(Money(), Money()));
+    ui->labelForeseeBalance->setText(makeStrForeseeBalance(Money(), Money()));
 
     InitializeActCurrencyComboBox();
     ui->tableTransactions->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -72,6 +81,12 @@ QString MainWindow::makeStrResidualUsual(const Money& moneyValue, const Money& m
                 .arg(Money(moneyValueAbs).to_str(" "));
     }
     return result;
+}
+
+QString MainWindow::makeStrForeseeBalance(const Money& balance, const Money& residualDiff) const
+{
+    return QStringLiteral("Expected balance next month: %1.")
+            .arg((balance + residualDiff).to_str(" "));
 }
 
 MainWindow::~MainWindow()
@@ -142,6 +157,32 @@ void MainWindow::dialogSaveFileAs()
         saveFile(fileName);
     }
 }
+
+void MainWindow::sortMngrByType()
+{
+    //mainMngr.sort(mainMngr.)
+}
+
+void MainWindow::sortMngrByDate()
+{
+    mainMngr.sort(mainMngr.DATE, false);
+    updateMngrInTable(mainMngr);
+}
+
+
+void MainWindow::sortMngrByMoney()
+{
+    mainMngr.sort(mainMngr.MONEY, false);
+    updateMngrInTable(mainMngr);
+}
+
+
+void MainWindow::sortMngrBySourceGoods()
+{
+    mainMngr.sort(mainMngr.CATEGORY, false);
+    updateMngrInTable(mainMngr);
+}
+
 
 bool MainWindow::loadFile(const QString& fileName)
 {
@@ -304,6 +345,7 @@ void MainWindow::updateStats(const Manager& mngr)
         resAverageMonth.setValue(resAverageMonthValue / months);
     ui->labelResidualAvgMonthValue->setText(resAverageMonth.to_str(" "));
     ui->labelResidualUsual->setText(makeStrResidualUsual(resThisMonth, resAverageMonth));
+    ui->labelForeseeBalance->setText(makeStrForeseeBalance(residual, resAverageMonth));
 }
 
 void MainWindow::on_comboBoxActiveCurrency_currentTextChanged(const QString &arg1)

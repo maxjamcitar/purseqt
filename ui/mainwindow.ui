@@ -235,7 +235,6 @@
      <property name="title">
       <string>Sort by</string>
      </property>
-     <addaction name="actionSortTransaction"/>
      <addaction name="actionSortDate"/>
      <addaction name="actionSortMoney"/>
      <addaction name="actionSortSourceGoods"/>

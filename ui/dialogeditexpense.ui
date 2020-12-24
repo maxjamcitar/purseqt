@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Edit expense</string>
   </property>
   <widget class="QDateEdit" name="dateEdit">
    <property name="geometry">

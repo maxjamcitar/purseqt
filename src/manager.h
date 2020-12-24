@@ -11,7 +11,7 @@
 class Manager
 {
 public:
-    enum ParameterType {DATE = 0, PRICE, CATEGORY};
+    enum ParameterType {CLASSTR, DATE, MONEY, CATEGORY};
     static ParameterType Parameter; // allows to use static enum
     Manager();
     Manager(Manager &otherManager);
@@ -47,7 +47,7 @@ public:
     bool readFile(QString fileName);
     bool writeFile(QString fileName);
 
-    bool compareTwo(const QSharedPointer<Transaction> left, const QSharedPointer<Transaction> right, ParameterType field) const;
+    bool compareTwo(const QSharedPointer<Transaction> left, const QSharedPointer<Transaction> right, ParameterType field, bool isAscending) const;
     void sort(ParameterType field, bool isAscending);
     QString show() const;
     Money accounting () const;

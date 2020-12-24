@@ -54,6 +54,7 @@ public:
     bool operator> (const Money &otherMoney) const;
     bool operator< (const Money &otherMoney) const;
     bool operator== (const Money &otherMoney) const;
+    bool operator!= (const Money &otherMoney) const;
     Money operator+ (const Money &otherMoney) const;
     void operator+= (const Money &otherMoney);
     Money operator- (const Money &otherMoney) const;

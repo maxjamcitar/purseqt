@@ -197,6 +197,11 @@ bool Money::operator== (const Money &otherMoney) const
     return (thisConverted.getValue() == otherConverted.getValue()) ? true : false;
 }
 
+bool Money::operator!= (const Money &otherMoney) const
+{
+    return !(operator==(otherMoney));
+}
+
 Money Money::operator+ (const Money &otherMoney) const
 {
     double coefOther = CurrConversion::getCoef(otherMoney.getCurrency());

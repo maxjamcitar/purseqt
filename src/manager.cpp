@@ -218,18 +218,19 @@ QString Manager::show() const
     return result;
 }
 
-bool Manager::compareTwo(const QSharedPointer<Transaction> left, const QSharedPointer<Transaction> right, ParameterType field) const
+bool Manager::compareTwo(const QSharedPointer<Transaction> left, const QSharedPointer<Transaction> right, ParameterType field, bool isAscending) const
 {
     bool result;
     QString leftCateg, rightCateg;
     switch (field)
     {
     case ParameterType::DATE:
-        result = (left->getDate() > right->getDate()) ? true : false;
+        result = ( !( (isAscending || (left->getDate() > right->getDate()) )) && (left->getDate() != right->getDate()) ) ? true : false;
         break;
 
-    case ParameterType::PRICE:
-        result = (left->getMoney() > right->getMoney()) ? true : false;
+    case ParameterType::MONEY:
+        result = ( !( (isAscending || (left->getMoney() > right->getMoney()) )) && (left->getMoney() != right->getMoney()) ) ? true : false;
+        qDebug() << left->getMoney().to_str(" ") << " > " << right->getMoney().to_str(" ") << " " << result;
         break;
 
     case ParameterType::CATEGORY:
@@ -259,11 +260,12 @@ bool Manager::compareTwo(const QSharedPointer<Transaction> left, const QSharedPo
         else
             rightCateg = QString("NaN");
 
-        result = (leftCateg > rightCateg) ? true : false;
+        result = ( !( (isAscending || (leftCateg > rightCateg)) ) && (leftCateg != rightCateg) ) ? true : false;
         break;
 
     default:
         QMessageBox::critical(nullptr, "Sorting failed", "Unknown sorting parameter. Sorting cancelled");
+        result = true;
     }
     return result;
 }
@@ -274,31 +276,26 @@ void Manager::sort(ParameterType field, bool isAscending)
         qDebug() << QString("No need to sort manager dqueue as it's empty");
     else if (dqueue.size() == 0)
         qDebug() << QString("No need to sort manager dqueue as it contains only 1 item");
-    auto mainItemIter = dqueue.begin();
-    // this is basically bubble sort
-    while(mainItemIter != dqueue.end())
+    auto dqueueSize = dqueue.size();
+    // this is literally bubble sort coz im lazy :)
+    bool isAnySwaps = true;
+    while (isAnySwaps)
     {
-        auto nextItemIter = std::next(mainItemIter);
-        while (nextItemIter != dqueue.end())
+        isAnySwaps = false;
+        for (int i = 0; i < (dqueueSize-1); ++i)
         {
-            if (isAscending)
+            auto mainItemIter = dqueue.at(i);
+            auto nextItemIter = dqueue.at(i+1);
+            if (compareTwo(mainItemIter, nextItemIter, field, isAscending))
             {
-                if (compareTwo(*mainItemIter, *nextItemIter, field))
-                {
-                    std::swap(mainItemIter, nextItemIter);
-                }
+                auto temp = dqueue.at(i+1);
+                dqueue.replace(i+1, dqueue.at(i));
+                dqueue.replace(i, temp);
+                isAnySwaps = true;
             }
-            else
-                if (!compareTwo(*mainItemIter, *nextItemIter, field))
-                {
-                    std::swap(mainItemIter, nextItemIter);
-                }
-            nextItemIter = std::next(nextItemIter);
         }
-        mainItemIter = std::next(mainItemIter);
     }
 }
-
 
 Money Manager::accounting() const
 {
@@ -351,7 +348,7 @@ Money Manager::residualDates(const QDate& date1, const QDate& date2) const
         }
     }
     else
-        res.setValue(-1);
+        res.setValue(0);
     return res;
 }
 

@@ -29,6 +29,11 @@ private slots:
     void dialogLoadFile();
     void dialogSaveFileAs();
 
+    void sortMngrByType();
+    void sortMngrByDate();
+    void sortMngrByMoney();
+    void sortMngrBySourceGoods();
+
     void on_comboBoxActiveCurrency_currentTextChanged(const QString &arg1);
 
     void on_tableTransactions_customContextMenuRequested(const QPoint &pos);
@@ -47,6 +52,7 @@ private:
     void updateStats(const Manager& mngr);
 
     QString makeStrResidualUsual(const Money& moneyValue, const Money& moneyAvg) const;
+    QString makeStrForeseeBalance(const Money& balance, const Money& residualDiff) const;
 
     Ui::MainWindow *ui;
 
