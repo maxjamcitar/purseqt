@@ -39,7 +39,10 @@ DialogResidualChart::DialogResidualChart(QWidget *parent, Manager* otherMngr) :
     }
     double resAverageMonthValue = resAverageMonth.getValue();
     if (months != 0)
-        resAverageMonth.setValue(resAverageMonthValue / months);
+    {
+        resAverageMonthValue /= months;
+        resAverageMonth.setValue(resAverageMonthValue);
+    }
 
     QLineSeries *seriesAvg = new QLineSeries();
     resAverageMonthValue = std::round(resAverageMonthValue * 100.0) / 100.0;    // rounding

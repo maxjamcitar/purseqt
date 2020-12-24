@@ -342,7 +342,10 @@ void MainWindow::updateStats(const Manager& mngr)
     }
     double resAverageMonthValue = resAverageMonth.getValue();
     if (months != 0)
+    {
         resAverageMonth.setValue(resAverageMonthValue / months);
+    }
+
     ui->labelResidualAvgMonthValue->setText(resAverageMonth.to_str(" "));
     ui->labelResidualUsual->setText(makeStrResidualUsual(resThisMonth, resAverageMonth));
     ui->labelForeseeBalance->setText(makeStrForeseeBalance(residual, resAverageMonth));

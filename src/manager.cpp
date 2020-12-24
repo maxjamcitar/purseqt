@@ -230,7 +230,6 @@ bool Manager::compareTwo(const QSharedPointer<Transaction> left, const QSharedPo
 
     case ParameterType::MONEY:
         result = ( !( (isAscending || (left->getMoney() > right->getMoney()) )) && (left->getMoney() != right->getMoney()) ) ? true : false;
-        qDebug() << left->getMoney().to_str(" ") << " > " << right->getMoney().to_str(" ") << " " << result;
         break;
 
     case ParameterType::CATEGORY:
